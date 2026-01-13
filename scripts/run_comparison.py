@@ -29,6 +29,7 @@ STRATEGIES = ["bigbang", "rolling", "batch_rolling", "canary", "bluegreen", "dep
 KEY_METRICS = [
     "time_to_full_patch",
     "exposure_window_weighted",
+    "node_unavailability_seconds",
     "mixed_version_time_seconds",
     "number_of_degraded_intervals",
     "number_of_incompatibility_violations",
@@ -125,6 +126,15 @@ def generate_summary(all_results: dict) -> str:
     
     for scenario in all_results:
         lines.append(f"\n## {scenario}\n")
+        
+        # Count successes vs failures
+        successes = [s for s, m in all_results[scenario].items() if "error" not in m]
+        failures = [s for s, m in all_results[scenario].items() if "error" in m]
+        
+        lines.append(f"- **Strategies that succeeded**: {len(successes)}/{len(all_results[scenario])}")
+        if failures:
+            lines.append(f"- **Failed (constraint violations)**: {', '.join(failures)}")
+        lines.append("")
         
         # Find best strategy for each key metric
         for metric in ["time_to_full_patch", "exposure_window_weighted", "total_downtime_seconds_overall"]:

@@ -135,6 +135,10 @@ class SimulationEngine:
             ],
             default=0,
         )
+        
+        # Track node unavailability: nodes × duration (node-seconds)
+        metrics.node_unavailability_seconds += len(down_nodes) * duration
+        
         self._apply_downtime(metrics, current_downtime, down_nodes, duration)
         self._advance_time(metrics, duration)
 

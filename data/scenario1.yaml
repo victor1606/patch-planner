@@ -1,12 +1,14 @@
 name: ha-microservices
 seed: 7
-min_up_default: 2
+min_up_default: 1
 incompatible_max_duration_seconds: 0
 nodes:
   - id: host-a
     type: HOST
+    service: hosts
     criticality: 4
     redundancy: 2
+    min_up: 1
     patch:
       patch_duration_seconds: 120
       requires_reboot: true
@@ -15,8 +17,10 @@ nodes:
       severity: 7.5
   - id: host-b
     type: HOST
+    service: hosts
     criticality: 4
     redundancy: 2
+    min_up: 1
     patch:
       patch_duration_seconds: 120
       requires_reboot: true

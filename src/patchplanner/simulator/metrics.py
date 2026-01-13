@@ -22,6 +22,8 @@ class MetricsState:
     rollback_count: int = 0
     plan_abort_count: int = 0
     number_of_guardrail_pauses: int = 0
+    # Node unavailability: total time × nodes being patched (node-seconds)
+    node_unavailability_seconds: int = 0
     _edge_mixed_time: Dict[Tuple[str, str], int] = field(default_factory=dict)
     _edge_violation_seen: Dict[Tuple[str, str], bool] = field(default_factory=dict)
 
@@ -107,6 +109,7 @@ def finalize_metrics(metrics: MetricsState) -> Dict[str, float | int | Dict[str,
         "rollback_count": metrics.rollback_count,
         "plan_abort_count": metrics.plan_abort_count,
         "number_of_guardrail_pauses": metrics.number_of_guardrail_pauses,
+        "node_unavailability_seconds": metrics.node_unavailability_seconds,
         "total_downtime_seconds": metrics.total_downtime_seconds,
         "total_downtime_seconds_overall": total_downtime_overall,
         "max_continuous_downtime_seconds": metrics.max_continuous_downtime_seconds,

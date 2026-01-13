@@ -8,43 +8,78 @@ from .base import BaseStrategy
 
 
 class CanaryStrategy(BaseStrategy):
+    """Canary strategy that respects service availability constraints.
+    
+    Patches one 'canary' node per service first (with a pause for observation),
+    then patches remaining nodes in batches that respect min_up constraints.
+    """
     name = "canary"
 
     def generate(self) -> Plan:
         node_ids = self._node_ids()
-        incompat_groups = self._group_by_incompatibility(node_ids)
-        group_lookup = {
-            node_id: group_id for group_id, nodes in incompat_groups.items() for node_id in nodes
-        }
-
+        
+        # Group nodes by service
         by_service = defaultdict(list)
         for node_id in node_ids:
             service = self.graph.nodes[node_id].get("service") or node_id
             by_service[service].append(node_id)
-
-        canary_nodes: List[str] = []
-        remaining: List[str] = []
-        used_groups = set()
-        for service, ids in sorted(by_service.items()):
-            ids.sort()
-            for node_id in ids:
-                group_id = group_lookup.get(node_id, -1)
-                if group_id in used_groups:
-                    continue
-                group_nodes = incompat_groups.get(group_id, [node_id])
-                if group_nodes and len(group_nodes) > 1:
-                    canary_nodes.extend(group_nodes)
-                    used_groups.add(group_id)
-                    remaining.extend([n for n in ids if n not in group_nodes])
-                else:
-                    canary_nodes.append(node_id)
-                    used_groups.add(group_id)
-                    remaining.extend([n for n in ids if n != node_id])
-                break
-
+        
+        # Calculate how many nodes can be down per service
+        max_down_per_service = {}
+        for service, nodes in by_service.items():
+            min_up = self._get_min_up(nodes)
+            max_down_per_service[service] = max(0, len(nodes) - min_up)
+        
+        # Select canaries - one per service (if service can have at least one down)
+        canaries = []
+        remaining_by_service = defaultdict(list)
+        
+        for service, nodes in by_service.items():
+            if max_down_per_service[service] > 0:
+                # Pick lowest criticality node as canary
+                nodes_sorted = sorted(
+                    nodes,
+                    key=lambda n: (
+                        self.graph.nodes[n]["criticality"],
+                        self.graph.nodes[n]["spec"].patch.severity,
+                        n,
+                    )
+                )
+                canaries.append(nodes_sorted[0])
+                remaining_by_service[service] = nodes_sorted[1:]
+            else:
+                # Can't take any node down - still need to patch somehow
+                # This will fail at runtime, but we try anyway
+                remaining_by_service[service] = nodes
+        
+        # Build canary batches respecting min_up (only 1 per service at a time)
+        canary_batches = self._build_safe_batches(canaries, max_down_per_service)
+        
+        # Flatten remaining nodes
+        remaining = []
+        for nodes in remaining_by_service.values():
+            remaining.extend(nodes)
+        
+        remaining.sort(
+            key=lambda n: (
+                -self.graph.nodes[n]["criticality"],
+                -self.graph.nodes[n]["spec"].patch.severity,
+                n,
+            )
+        )
+        
+        # Build remaining batches respecting min_up
+        remaining_batches = self._build_safe_batches(remaining, max_down_per_service)
+        
+        # Build steps
         steps: List[PlanStep] = []
-        if canary_nodes:
-            steps.extend(self._make_steps([canary_nodes], action="patch_canary"))
+        
+        # Add canary steps
+        for batch in canary_batches:
+            steps.extend(self._make_steps([batch], action="patch_canary"))
+        
+        # Add pause after canaries
+        if canary_batches:
             steps.append(
                 PlanStep(
                     step_id="pause-canary",
@@ -53,7 +88,44 @@ class CanaryStrategy(BaseStrategy):
                     strategy=self.name,
                 )
             )
-        if remaining:
-            steps.extend(self._make_steps([sorted(set(remaining))], action="patch"))
-
+        
+        # Add remaining steps
+        for batch in remaining_batches:
+            steps.extend(self._make_steps([batch], action="patch"))
+        
         return Plan(strategy=self.name, steps=steps)
+    
+    def _build_safe_batches(self, nodes: List[str], max_down: dict) -> List[List[str]]:
+        """Build batches that respect per-service max_down limits."""
+        batches = []
+        remaining = list(nodes)
+        
+        while remaining:
+            batch = []
+            service_down_count = defaultdict(int)
+            
+            for node_id in list(remaining):
+                service = self.graph.nodes[node_id].get("service") or node_id
+                if service_down_count[service] < max_down.get(service, 1):
+                    batch.append(node_id)
+                    service_down_count[service] += 1
+                    remaining.remove(node_id)
+            
+            if batch:
+                batches.append(sorted(batch))
+            else:
+                # Safety: if we can't make progress, patch one at a time
+                if remaining:
+                    batches.append([remaining.pop(0)])
+        
+        return batches
+    
+    def _get_min_up(self, node_ids: List[str]) -> int:
+        """Get the min_up requirement for a group of nodes."""
+        min_ups = []
+        for node_id in node_ids:
+            node_min = self.graph.nodes[node_id].get("min_up")
+            if node_min is None:
+                node_min = self.scenario.min_up_default
+            min_ups.append(node_min)
+        return max(min_ups) if min_ups else self.scenario.min_up_default

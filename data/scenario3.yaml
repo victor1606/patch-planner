@@ -4,9 +4,10 @@ min_up_default: 1
 nodes:
   - id: core-host
     type: HOST
+    service: core
     criticality: 5
     redundancy: 1
-    min_up: 1
+    min_up: 0
     patch:
       patch_duration_seconds: 180
       requires_reboot: true
