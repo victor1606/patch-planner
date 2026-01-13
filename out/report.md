@@ -1,0 +1,17 @@
+# Patch Strategy Report
+
+## Summary
+
+- time_to_full_patch: 1350
+- exposure_window_weighted: 247455.0
+- mixed_version_time_seconds: 900
+- number_of_degraded_intervals: 10
+- number_of_incompatibility_violations: 0
+- rollback_count: 0
+- plan_abort_count: 0
+- number_of_guardrail_pauses: 13
+- total_downtime_seconds_overall: 0
+- max_continuous_downtime_seconds_overall: 0
+
+## Downtime Breakdown
+

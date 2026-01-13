@@ -1,0 +1,39 @@
+{"time": 60, "event": "bluegreen_build", "step_id": "group-1-bluegreen-build", "node_ids": ["api-1"], "duration": 60}
+{"time": 60, "event": "bluegreen_switch", "step_id": "group-1-bluegreen-switch", "node_ids": ["api-1"], "duration": 0}
+{"time": 90, "event": "pause", "step_id": "group-1-cooldown", "duration": 30}
+{"time": 150, "event": "bluegreen_build", "step_id": "group-2-bluegreen-build", "node_ids": ["api-2"], "duration": 60}
+{"time": 150, "event": "bluegreen_switch", "step_id": "group-2-bluegreen-switch", "node_ids": ["api-2"], "duration": 0}
+{"time": 180, "event": "pause", "step_id": "group-2-cooldown", "duration": 30}
+{"time": 240, "event": "bluegreen_build", "step_id": "group-3-bluegreen-build", "node_ids": ["api-3"], "duration": 60}
+{"time": 240, "event": "bluegreen_switch", "step_id": "group-3-bluegreen-switch", "node_ids": ["api-3"], "duration": 0}
+{"time": 270, "event": "pause", "step_id": "group-3-cooldown", "duration": 30}
+{"time": 345, "event": "bluegreen_build", "step_id": "group-4-bluegreen-build", "node_ids": ["auth-1"], "duration": 75}
+{"time": 345, "event": "bluegreen_switch", "step_id": "group-4-bluegreen-switch", "node_ids": ["auth-1"], "duration": 0}
+{"time": 375, "event": "pause", "step_id": "group-4-cooldown", "duration": 30}
+{"time": 450, "event": "bluegreen_build", "step_id": "group-5-bluegreen-build", "node_ids": ["auth-2"], "duration": 75}
+{"time": 450, "event": "bluegreen_switch", "step_id": "group-5-bluegreen-switch", "node_ids": ["auth-2"], "duration": 0}
+{"time": 480, "event": "pause", "step_id": "group-5-cooldown", "duration": 30}
+{"time": 555, "event": "bluegreen_build", "step_id": "group-6-bluegreen-build", "node_ids": ["auth-3"], "duration": 75}
+{"time": 555, "event": "bluegreen_switch", "step_id": "group-6-bluegreen-switch", "node_ids": ["auth-3"], "duration": 0}
+{"time": 585, "event": "pause", "step_id": "group-6-cooldown", "duration": 30}
+{"time": 675, "event": "bluegreen_build", "step_id": "group-7-bluegreen-build", "node_ids": ["db-1"], "duration": 90}
+{"time": 675, "event": "bluegreen_switch", "step_id": "group-7-bluegreen-switch", "node_ids": ["db-1"], "duration": 0}
+{"time": 705, "event": "pause", "step_id": "group-7-cooldown", "duration": 30}
+{"time": 795, "event": "bluegreen_build", "step_id": "group-8-bluegreen-build", "node_ids": ["db-2"], "duration": 90}
+{"time": 795, "event": "bluegreen_switch", "step_id": "group-8-bluegreen-switch", "node_ids": ["db-2"], "duration": 0}
+{"time": 825, "event": "pause", "step_id": "group-8-cooldown", "duration": 30}
+{"time": 870, "event": "bluegreen_build", "step_id": "group-9-bluegreen-build", "node_ids": ["web-1"], "duration": 45}
+{"time": 870, "event": "bluegreen_switch", "step_id": "group-9-bluegreen-switch", "node_ids": ["web-1"], "duration": 0}
+{"time": 900, "event": "pause", "step_id": "group-9-cooldown", "duration": 30}
+{"time": 945, "event": "bluegreen_build", "step_id": "group-10-bluegreen-build", "node_ids": ["web-2"], "duration": 45}
+{"time": 945, "event": "bluegreen_switch", "step_id": "group-10-bluegreen-switch", "node_ids": ["web-2"], "duration": 0}
+{"time": 975, "event": "pause", "step_id": "group-10-cooldown", "duration": 30}
+{"time": 1020, "event": "bluegreen_build", "step_id": "group-11-bluegreen-build", "node_ids": ["web-3"], "duration": 45}
+{"time": 1020, "event": "bluegreen_switch", "step_id": "group-11-bluegreen-switch", "node_ids": ["web-3"], "duration": 0}
+{"time": 1050, "event": "pause", "step_id": "group-11-cooldown", "duration": 30}
+{"time": 1170, "event": "bluegreen_build", "step_id": "group-12-bluegreen-build", "node_ids": ["host-a"], "duration": 120}
+{"time": 1170, "event": "bluegreen_switch", "step_id": "group-12-bluegreen-switch", "node_ids": ["host-a"], "duration": 0}
+{"time": 1200, "event": "pause", "step_id": "group-12-cooldown", "duration": 30}
+{"time": 1320, "event": "bluegreen_build", "step_id": "group-13-bluegreen-build", "node_ids": ["host-b"], "duration": 120}
+{"time": 1320, "event": "bluegreen_switch", "step_id": "group-13-bluegreen-switch", "node_ids": ["host-b"], "duration": 0}
+{"time": 1350, "event": "pause", "step_id": "group-13-cooldown", "duration": 30}

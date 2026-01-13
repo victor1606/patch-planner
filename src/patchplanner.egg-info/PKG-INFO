@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: patchplanner
+Version: 0.1.0
+Summary: Patch planning simulator for critical infrastructures
+Requires-Python: >=3.11
+Requires-Dist: pydantic>=2.0
+Requires-Dist: networkx>=3.0
+Requires-Dist: PyYAML>=6.0
+Requires-Dist: matplotlib>=3.7

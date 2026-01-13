@@ -1,0 +1,182 @@
+name: ha-microservices
+seed: 7
+min_up_default: 2
+incompatible_max_duration_seconds: 0
+nodes:
+  - id: host-a
+    type: HOST
+    criticality: 4
+    redundancy: 2
+    patch:
+      patch_duration_seconds: 120
+      requires_reboot: true
+      failure_probability: 0.05
+      rollback_supported: true
+      severity: 7.5
+  - id: host-b
+    type: HOST
+    criticality: 4
+    redundancy: 2
+    patch:
+      patch_duration_seconds: 120
+      requires_reboot: true
+      failure_probability: 0.05
+      rollback_supported: true
+      severity: 7.5
+  - id: web-1
+    type: SERVICE_INSTANCE
+    service: web
+    criticality: 3
+    redundancy: 3
+    min_up: 2
+    patch:
+      patch_duration_seconds: 45
+      requires_restart: true
+      failure_probability: 0.02
+      rollback_supported: true
+      severity: 6.0
+  - id: web-2
+    type: SERVICE_INSTANCE
+    service: web
+    criticality: 3
+    redundancy: 3
+    min_up: 2
+    patch:
+      patch_duration_seconds: 45
+      requires_restart: true
+      failure_probability: 0.02
+      rollback_supported: true
+      severity: 6.0
+  - id: web-3
+    type: SERVICE_INSTANCE
+    service: web
+    criticality: 3
+    redundancy: 3
+    min_up: 2
+    patch:
+      patch_duration_seconds: 45
+      requires_restart: true
+      failure_probability: 0.02
+      rollback_supported: true
+      severity: 6.0
+  - id: api-1
+    type: SERVICE_INSTANCE
+    service: api
+    criticality: 4
+    redundancy: 3
+    min_up: 2
+    patch:
+      patch_duration_seconds: 60
+      requires_restart: true
+      failure_probability: 0.03
+      rollback_supported: true
+      severity: 7.0
+  - id: api-2
+    type: SERVICE_INSTANCE
+    service: api
+    criticality: 4
+    redundancy: 3
+    min_up: 2
+    patch:
+      patch_duration_seconds: 60
+      requires_restart: true
+      failure_probability: 0.03
+      rollback_supported: true
+      severity: 7.0
+  - id: api-3
+    type: SERVICE_INSTANCE
+    service: api
+    criticality: 4
+    redundancy: 3
+    min_up: 2
+    patch:
+      patch_duration_seconds: 60
+      requires_restart: true
+      failure_probability: 0.03
+      rollback_supported: true
+      severity: 7.0
+  - id: auth-1
+    type: SERVICE_INSTANCE
+    service: auth
+    criticality: 5
+    redundancy: 3
+    min_up: 2
+    patch:
+      patch_duration_seconds: 75
+      requires_restart: true
+      failure_probability: 0.04
+      rollback_supported: true
+      severity: 8.0
+  - id: auth-2
+    type: SERVICE_INSTANCE
+    service: auth
+    criticality: 5
+    redundancy: 3
+    min_up: 2
+    patch:
+      patch_duration_seconds: 75
+      requires_restart: true
+      failure_probability: 0.04
+      rollback_supported: true
+      severity: 8.0
+  - id: auth-3
+    type: SERVICE_INSTANCE
+    service: auth
+    criticality: 5
+    redundancy: 3
+    min_up: 2
+    patch:
+      patch_duration_seconds: 75
+      requires_restart: true
+      failure_probability: 0.04
+      rollback_supported: true
+      severity: 8.0
+  - id: db-1
+    type: DATABASE
+    service: db
+    criticality: 5
+    redundancy: 2
+    min_up: 1
+    patch:
+      patch_duration_seconds: 90
+      requires_restart: true
+      failure_probability: 0.02
+      rollback_supported: true
+      severity: 7.5
+  - id: db-2
+    type: DATABASE
+    service: db
+    criticality: 5
+    redundancy: 2
+    min_up: 1
+    patch:
+      patch_duration_seconds: 90
+      requires_restart: true
+      failure_probability: 0.02
+      rollback_supported: true
+      severity: 7.5
+edges:
+  - source: web-1
+    target: api-1
+    compatibility: COMPATIBLE
+  - source: web-2
+    target: api-2
+    compatibility: COMPATIBLE
+  - source: web-3
+    target: api-3
+    compatibility: COMPATIBLE
+  - source: api-1
+    target: auth-1
+    compatibility: DEGRADED
+  - source: api-2
+    target: auth-2
+    compatibility: DEGRADED
+  - source: api-3
+    target: auth-3
+    compatibility: DEGRADED
+  - source: api-1
+    target: db-1
+    compatibility: COMPATIBLE
+  - source: api-2
+    target: db-2
+    compatibility: COMPATIBLE

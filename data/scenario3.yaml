@@ -1,0 +1,46 @@
+name: patch-risk
+seed: 21
+min_up_default: 1
+nodes:
+  - id: core-host
+    type: HOST
+    criticality: 5
+    redundancy: 1
+    min_up: 1
+    patch:
+      patch_duration_seconds: 180
+      requires_reboot: true
+      failure_probability: 0.2
+      rollback_supported: false
+      severity: 9.0
+  - id: sensor-1
+    type: SERVICE_INSTANCE
+    service: sensor
+    criticality: 3
+    redundancy: 2
+    min_up: 1
+    patch:
+      patch_duration_seconds: 30
+      requires_restart: true
+      failure_probability: 0.05
+      rollback_supported: true
+      severity: 5.5
+  - id: sensor-2
+    type: SERVICE_INSTANCE
+    service: sensor
+    criticality: 3
+    redundancy: 2
+    min_up: 1
+    patch:
+      patch_duration_seconds: 30
+      requires_restart: true
+      failure_probability: 0.05
+      rollback_supported: true
+      severity: 5.5
+edges:
+  - source: sensor-1
+    target: core-host
+    compatibility: COMPATIBLE
+  - source: sensor-2
+    target: core-host
+    compatibility: COMPATIBLE

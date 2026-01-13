@@ -1,0 +1,60 @@
+name: compatibility-trap
+seed: 11
+min_up_default: 1
+incompatible_max_duration_seconds: 0
+nodes:
+  - id: edge-a
+    type: SERVICE_INSTANCE
+    service: edge
+    criticality: 4
+    redundancy: 2
+    min_up: 1
+    patch:
+      patch_duration_seconds: 40
+      requires_restart: true
+      failure_probability: 0.01
+      rollback_supported: true
+      severity: 6.0
+  - id: edge-b
+    type: SERVICE_INSTANCE
+    service: edge
+    criticality: 4
+    redundancy: 2
+    min_up: 1
+    patch:
+      patch_duration_seconds: 40
+      requires_restart: true
+      failure_probability: 0.01
+      rollback_supported: true
+      severity: 6.0
+  - id: control-1
+    type: SERVICE_INSTANCE
+    service: control
+    criticality: 5
+    redundancy: 2
+    min_up: 1
+    patch:
+      patch_duration_seconds: 70
+      requires_restart: true
+      failure_probability: 0.03
+      rollback_supported: true
+      severity: 8.5
+  - id: control-2
+    type: SERVICE_INSTANCE
+    service: control
+    criticality: 5
+    redundancy: 2
+    min_up: 1
+    patch:
+      patch_duration_seconds: 70
+      requires_restart: true
+      failure_probability: 0.03
+      rollback_supported: true
+      severity: 8.5
+edges:
+  - source: edge-a
+    target: control-1
+    compatibility: INCOMPATIBLE
+  - source: edge-b
+    target: control-2
+    compatibility: INCOMPATIBLE

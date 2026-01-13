@@ -1,0 +1,396 @@
+{
+  "strategy": "hybrid",
+  "steps": [
+    {
+      "step_id": "group-1-bluegreen-build",
+      "action": "bluegreen_build",
+      "node_ids": [
+        "api-1"
+      ],
+      "pause_seconds": 0,
+      "strategy": "hybrid",
+      "metadata": {}
+    },
+    {
+      "step_id": "group-1-bluegreen-switch",
+      "action": "bluegreen_switch",
+      "node_ids": [
+        "api-1"
+      ],
+      "pause_seconds": 0,
+      "strategy": "hybrid",
+      "metadata": {}
+    },
+    {
+      "step_id": "group-1-cooldown",
+      "action": "pause",
+      "node_ids": [],
+      "pause_seconds": 30,
+      "strategy": "hybrid",
+      "metadata": {
+        "guardrail": "cooldown"
+      }
+    },
+    {
+      "step_id": "group-2-bluegreen-build",
+      "action": "bluegreen_build",
+      "node_ids": [
+        "api-2"
+      ],
+      "pause_seconds": 0,
+      "strategy": "hybrid",
+      "metadata": {}
+    },
+    {
+      "step_id": "group-2-bluegreen-switch",
+      "action": "bluegreen_switch",
+      "node_ids": [
+        "api-2"
+      ],
+      "pause_seconds": 0,
+      "strategy": "hybrid",
+      "metadata": {}
+    },
+    {
+      "step_id": "group-2-cooldown",
+      "action": "pause",
+      "node_ids": [],
+      "pause_seconds": 30,
+      "strategy": "hybrid",
+      "metadata": {
+        "guardrail": "cooldown"
+      }
+    },
+    {
+      "step_id": "group-3-bluegreen-build",
+      "action": "bluegreen_build",
+      "node_ids": [
+        "api-3"
+      ],
+      "pause_seconds": 0,
+      "strategy": "hybrid",
+      "metadata": {}
+    },
+    {
+      "step_id": "group-3-bluegreen-switch",
+      "action": "bluegreen_switch",
+      "node_ids": [
+        "api-3"
+      ],
+      "pause_seconds": 0,
+      "strategy": "hybrid",
+      "metadata": {}
+    },
+    {
+      "step_id": "group-3-cooldown",
+      "action": "pause",
+      "node_ids": [],
+      "pause_seconds": 30,
+      "strategy": "hybrid",
+      "metadata": {
+        "guardrail": "cooldown"
+      }
+    },
+    {
+      "step_id": "group-4-bluegreen-build",
+      "action": "bluegreen_build",
+      "node_ids": [
+        "auth-1"
+      ],
+      "pause_seconds": 0,
+      "strategy": "hybrid",
+      "metadata": {}
+    },
+    {
+      "step_id": "group-4-bluegreen-switch",
+      "action": "bluegreen_switch",
+      "node_ids": [
+        "auth-1"
+      ],
+      "pause_seconds": 0,
+      "strategy": "hybrid",
+      "metadata": {}
+    },
+    {
+      "step_id": "group-4-cooldown",
+      "action": "pause",
+      "node_ids": [],
+      "pause_seconds": 30,
+      "strategy": "hybrid",
+      "metadata": {
+        "guardrail": "cooldown"
+      }
+    },
+    {
+      "step_id": "group-5-bluegreen-build",
+      "action": "bluegreen_build",
+      "node_ids": [
+        "auth-2"
+      ],
+      "pause_seconds": 0,
+      "strategy": "hybrid",
+      "metadata": {}
+    },
+    {
+      "step_id": "group-5-bluegreen-switch",
+      "action": "bluegreen_switch",
+      "node_ids": [
+        "auth-2"
+      ],
+      "pause_seconds": 0,
+      "strategy": "hybrid",
+      "metadata": {}
+    },
+    {
+      "step_id": "group-5-cooldown",
+      "action": "pause",
+      "node_ids": [],
+      "pause_seconds": 30,
+      "strategy": "hybrid",
+      "metadata": {
+        "guardrail": "cooldown"
+      }
+    },
+    {
+      "step_id": "group-6-bluegreen-build",
+      "action": "bluegreen_build",
+      "node_ids": [
+        "auth-3"
+      ],
+      "pause_seconds": 0,
+      "strategy": "hybrid",
+      "metadata": {}
+    },
+    {
+      "step_id": "group-6-bluegreen-switch",
+      "action": "bluegreen_switch",
+      "node_ids": [
+        "auth-3"
+      ],
+      "pause_seconds": 0,
+      "strategy": "hybrid",
+      "metadata": {}
+    },
+    {
+      "step_id": "group-6-cooldown",
+      "action": "pause",
+      "node_ids": [],
+      "pause_seconds": 30,
+      "strategy": "hybrid",
+      "metadata": {
+        "guardrail": "cooldown"
+      }
+    },
+    {
+      "step_id": "group-7-bluegreen-build",
+      "action": "bluegreen_build",
+      "node_ids": [
+        "db-1"
+      ],
+      "pause_seconds": 0,
+      "strategy": "hybrid",
+      "metadata": {}
+    },
+    {
+      "step_id": "group-7-bluegreen-switch",
+      "action": "bluegreen_switch",
+      "node_ids": [
+        "db-1"
+      ],
+      "pause_seconds": 0,
+      "strategy": "hybrid",
+      "metadata": {}
+    },
+    {
+      "step_id": "group-7-cooldown",
+      "action": "pause",
+      "node_ids": [],
+      "pause_seconds": 30,
+      "strategy": "hybrid",
+      "metadata": {
+        "guardrail": "cooldown"
+      }
+    },
+    {
+      "step_id": "group-8-bluegreen-build",
+      "action": "bluegreen_build",
+      "node_ids": [
+        "db-2"
+      ],
+      "pause_seconds": 0,
+      "strategy": "hybrid",
+      "metadata": {}
+    },
+    {
+      "step_id": "group-8-bluegreen-switch",
+      "action": "bluegreen_switch",
+      "node_ids": [
+        "db-2"
+      ],
+      "pause_seconds": 0,
+      "strategy": "hybrid",
+      "metadata": {}
+    },
+    {
+      "step_id": "group-8-cooldown",
+      "action": "pause",
+      "node_ids": [],
+      "pause_seconds": 30,
+      "strategy": "hybrid",
+      "metadata": {
+        "guardrail": "cooldown"
+      }
+    },
+    {
+      "step_id": "group-9-bluegreen-build",
+      "action": "bluegreen_build",
+      "node_ids": [
+        "web-1"
+      ],
+      "pause_seconds": 0,
+      "strategy": "hybrid",
+      "metadata": {}
+    },
+    {
+      "step_id": "group-9-bluegreen-switch",
+      "action": "bluegreen_switch",
+      "node_ids": [
+        "web-1"
+      ],
+      "pause_seconds": 0,
+      "strategy": "hybrid",
+      "metadata": {}
+    },
+    {
+      "step_id": "group-9-cooldown",
+      "action": "pause",
+      "node_ids": [],
+      "pause_seconds": 30,
+      "strategy": "hybrid",
+      "metadata": {
+        "guardrail": "cooldown"
+      }
+    },
+    {
+      "step_id": "group-10-bluegreen-build",
+      "action": "bluegreen_build",
+      "node_ids": [
+        "web-2"
+      ],
+      "pause_seconds": 0,
+      "strategy": "hybrid",
+      "metadata": {}
+    },
+    {
+      "step_id": "group-10-bluegreen-switch",
+      "action": "bluegreen_switch",
+      "node_ids": [
+        "web-2"
+      ],
+      "pause_seconds": 0,
+      "strategy": "hybrid",
+      "metadata": {}
+    },
+    {
+      "step_id": "group-10-cooldown",
+      "action": "pause",
+      "node_ids": [],
+      "pause_seconds": 30,
+      "strategy": "hybrid",
+      "metadata": {
+        "guardrail": "cooldown"
+      }
+    },
+    {
+      "step_id": "group-11-bluegreen-build",
+      "action": "bluegreen_build",
+      "node_ids": [
+        "web-3"
+      ],
+      "pause_seconds": 0,
+      "strategy": "hybrid",
+      "metadata": {}
+    },
+    {
+      "step_id": "group-11-bluegreen-switch",
+      "action": "bluegreen_switch",
+      "node_ids": [
+        "web-3"
+      ],
+      "pause_seconds": 0,
+      "strategy": "hybrid",
+      "metadata": {}
+    },
+    {
+      "step_id": "group-11-cooldown",
+      "action": "pause",
+      "node_ids": [],
+      "pause_seconds": 30,
+      "strategy": "hybrid",
+      "metadata": {
+        "guardrail": "cooldown"
+      }
+    },
+    {
+      "step_id": "group-12-bluegreen-build",
+      "action": "bluegreen_build",
+      "node_ids": [
+        "host-a"
+      ],
+      "pause_seconds": 0,
+      "strategy": "hybrid",
+      "metadata": {}
+    },
+    {
+      "step_id": "group-12-bluegreen-switch",
+      "action": "bluegreen_switch",
+      "node_ids": [
+        "host-a"
+      ],
+      "pause_seconds": 0,
+      "strategy": "hybrid",
+      "metadata": {}
+    },
+    {
+      "step_id": "group-12-cooldown",
+      "action": "pause",
+      "node_ids": [],
+      "pause_seconds": 30,
+      "strategy": "hybrid",
+      "metadata": {
+        "guardrail": "cooldown"
+      }
+    },
+    {
+      "step_id": "group-13-bluegreen-build",
+      "action": "bluegreen_build",
+      "node_ids": [
+        "host-b"
+      ],
+      "pause_seconds": 0,
+      "strategy": "hybrid",
+      "metadata": {}
+    },
+    {
+      "step_id": "group-13-bluegreen-switch",
+      "action": "bluegreen_switch",
+      "node_ids": [
+        "host-b"
+      ],
+      "pause_seconds": 0,
+      "strategy": "hybrid",
+      "metadata": {}
+    },
+    {
+      "step_id": "group-13-cooldown",
+      "action": "pause",
+      "node_ids": [],
+      "pause_seconds": 30,
+      "strategy": "hybrid",
+      "metadata": {
+        "guardrail": "cooldown"
+      }
+    }
+  ],
+  "metadata": {}
+}
