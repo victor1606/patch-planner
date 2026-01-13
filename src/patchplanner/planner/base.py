@@ -1,3 +1,4 @@
+"""Base class for all patch deployment strategies."""
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -10,6 +11,7 @@ from ..models import Plan, PlanStep, ScenarioSpec
 
 
 class BaseStrategy(ABC):
+    """Abstract base for strategy implementations using the Strategy Pattern."""
     name = "base"
 
     def __init__(self, scenario: ScenarioSpec, graph: nx.DiGraph):
@@ -22,9 +24,11 @@ class BaseStrategy(ABC):
         raise NotImplementedError
 
     def _node_ids(self) -> List[str]:
+        """Get all patchable node IDs."""
         return [n for n, data in self.graph.nodes(data=True) if data["patchable"]]
 
     def _group_by_incompatibility(self, node_ids: Iterable[str]) -> Dict[str | int, List[str]]:
+        """Group nodes that must be patched together due to INCOMPATIBLE edges."""
         groups: Dict[str | int, List[str]] = {}
         for node_id in node_ids:
             group_id = self._incompat_groups.get(node_id, node_id)

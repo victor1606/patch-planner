@@ -1,3 +1,4 @@
+"""Constraint checking for availability and compatibility."""
 from __future__ import annotations
 
 from collections import defaultdict
@@ -9,6 +10,7 @@ from ..models import CompatibilityLevel, EdgeSpec, HealthState, ScenarioSpec
 
 
 def service_groups(graph: nx.DiGraph) -> Dict[str, List[str]]:
+    """Group nodes by service name for availability checking."""
     groups: Dict[str, List[str]] = defaultdict(list)
     for node_id, data in graph.nodes(data=True):
         service = data.get("service") or node_id
@@ -31,6 +33,7 @@ def min_up_for_service(
 def availability_ok(
     graph: nx.DiGraph, scenario: ScenarioSpec, down_nodes: Iterable[str]
 ) -> Tuple[bool, List[str]]:
+    """Check if taking down these nodes would violate min_up constraints."""
     down_set = set(down_nodes)
     violations: List[str] = []
     for service, node_ids in service_groups(graph).items():

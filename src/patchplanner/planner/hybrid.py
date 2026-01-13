@@ -1,3 +1,4 @@
+"""Hybrid strategy that adapts between blue-green and rolling based on constraints."""
 from __future__ import annotations
 
 from typing import Dict, List, Tuple
@@ -7,12 +8,14 @@ from .base import BaseStrategy
 
 
 class HybridRiskAwareStrategy(BaseStrategy):
+    """Risk-aware adaptive strategy: patches high-risk nodes first, chooses optimal sub-strategy per group."""
     name = "hybrid"
 
     def generate(self) -> Plan:
         node_ids = self._node_ids()
         risk_scores = self._risk_scores(node_ids)
         groups = self._group_by_incompatibility(node_ids)
+        # Order groups by highest risk first
         ordered_groups = sorted(
             groups.values(),
             key=lambda nodes: (-max(risk_scores[n] for n in nodes), sorted(nodes)[0]),
@@ -21,6 +24,7 @@ class HybridRiskAwareStrategy(BaseStrategy):
         steps: List[PlanStep] = []
         cooldown = 30
         for idx, group_nodes in enumerate(ordered_groups, start=1):
+            # Choose blue-green if possible (zero downtime), otherwise rolling
             if self._use_bluegreen(group_nodes):
                 steps.append(
                     PlanStep(

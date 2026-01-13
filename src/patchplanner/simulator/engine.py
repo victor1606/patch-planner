@@ -1,3 +1,4 @@
+"""Discrete-event simulation engine for patch deployment."""
 from __future__ import annotations
 
 import random
@@ -11,6 +12,7 @@ from .metrics import MetricsState, finalize_metrics, update_interval_metrics
 
 
 class SimulationEngine:
+    """Executes deployment plans with failure injection and constraint checking."""
     def __init__(self, scenario: ScenarioSpec, graph: nx.DiGraph, edges):
         self.scenario = scenario
         self.graph = graph
@@ -33,11 +35,13 @@ class SimulationEngine:
         return normalized
 
     def run(self, plan: Plan, seed: int | None = None) -> SimulationResult:
+        """Execute plan and return simulation results with metrics."""
         rng = random.Random(seed if seed is not None else self.scenario.seed)
         metrics = MetricsState()
         events: List[Dict[str, object]] = []
         current_downtime: Dict[str, int] = {}
 
+        # Process each step in the plan
         for step in plan.steps:
             if step.action == "pause":
                 if step.metadata.get("guardrail"):

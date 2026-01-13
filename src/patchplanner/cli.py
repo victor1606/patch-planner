@@ -1,3 +1,4 @@
+"""Command-line interface for PatchPlanner simulator."""
 from __future__ import annotations
 
 import argparse
@@ -15,7 +16,7 @@ from .planner import (
 from .simulator.engine import SimulationEngine
 from .simulator.reporter import write_report
 
-
+# Registry of available deployment strategies
 STRATEGIES = {
     "bigbang": BigBangStrategy,
     "rolling": RollingStrategy,
@@ -40,9 +41,11 @@ def main() -> None:
     parser.add_argument("--batch-size", type=int, default=2)
     args = parser.parse_args()
 
+    # Load scenario from YAML and build dependency graph
     scenario = load_scenario(args.scenario)
     graph, edges = build_graph(scenario)
 
+    # Instantiate the selected strategy
     strategy_cls = STRATEGIES[args.strategy]
     if args.strategy == "batch_rolling":
         strategy = strategy_cls(scenario, graph, batch_size=args.batch_size)

@@ -1,3 +1,4 @@
+"""Metrics collection for simulation results."""
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -10,6 +11,7 @@ from ..models import CompatibilityLevel, EdgeSpec, ScenarioSpec
 
 @dataclass
 class MetricsState:
+    """State tracking for all simulation metrics during execution."""
     time_seconds: int = 0
     total_downtime_seconds: Dict[str, int] = field(default_factory=dict)
     max_continuous_downtime_seconds: Dict[str, int] = field(default_factory=dict)
@@ -40,6 +42,7 @@ def update_interval_metrics(
 
 
 def _update_exposure(metrics: MetricsState, graph: nx.DiGraph, duration: int) -> None:
+    """Calculate exposure window: sum of (criticality × severity × time) for unpatched nodes."""
     exposure = 0.0
     for node_id, data in graph.nodes(data=True):
         if data.get("version") != "v_new":

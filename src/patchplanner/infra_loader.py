@@ -1,3 +1,4 @@
+"""Infrastructure loading utilities: YAML parsing and graph construction."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -15,10 +16,12 @@ from .models import (
 
 
 def load_scenario(path: str | Path) -> ScenarioSpec:
+    """Load scenario from YAML file and parse into structured objects."""
     raw = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
     if raw is None:
         raise ValueError(f"Empty scenario file: {path}")
 
+    # Support optional global patches section
     patches = raw.get("patches", {})
     nodes = []
     for node_data in raw.get("nodes", []):
