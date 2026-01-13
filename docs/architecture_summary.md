@@ -47,11 +47,12 @@ Implements the **Strategy Pattern** with seven deployment strategies:
 
 | Strategy | Approach | Trade-off |
 |----------|----------|-----------|
-| Big Bang | All at once | Fast but max downtime |
-| Rolling | One-by-one | Safe but slow |
-| Blue-Green | Parallel build + switch | Zero downtime, 2x resources |
-| Canary | Test on subset first | Early failure detection |
-| Dependency-Aware | Topological order | Respects dependencies |
+| BigBang | All at once | Fast but violates min_up |
+| Rolling | One-by-one per service | Safe but slow |
+| BatchRolling | Batched per service | Faster, still safe |
+| Blue-Green | Parallel build + switch | Zero node unavailability |
+| Canary | Test subset first | Early failure detection |
+| DepGreedy | Topological order | Respects dependencies |
 | **Hybrid** | Risk-based + adaptive | Balances all factors |
 
 ### 3.3 Simulation Engine
@@ -69,14 +70,26 @@ A discrete-event simulator that:
 
 | Category | Metrics |
 |----------|---------|
-| Timing | Total duration, downtime per service |
+| Timing | Total duration, node unavailability (node-seconds) |
+| Availability | Service downtime (when healthy < min_up) |
 | Security | Exposure window (weighted by severity × criticality) |
 | Reliability | Rollback count, constraint violations |
 | Compatibility | Mixed-version time, degraded intervals |
 
 ---
 
-## 4. Data Flow
+## 4. Constraint-Aware Planning
+
+All strategies (except BigBang) are **availability-aware**:
+- Group nodes by service
+- Calculate `max_down = service_size - min_up`
+- Never patch more than `max_down` nodes from any service simultaneously
+
+This ensures zero service-level downtime while patching.
+
+---
+
+## 6. Data Flow
 
 ```
 scenario.yaml  ──►  Graph Builder  ──►  Strategy.generate()  ──►  Plan
@@ -87,20 +100,22 @@ reports (JSON/CSV/MD)  ◄──  Reporter  ◄──  SimulationResult  ◄─�
 
 ---
 
-## 5. Technology Stack
+## 7. Technology Stack
 
 - **Python 3.11+** – Core implementation
 - **Pydantic** – Data validation and serialization
 - **NetworkX** – Graph operations and algorithms
 - **PyYAML** – Configuration parsing
+- **Matplotlib** – Visualization (optional)
 
 ---
 
-## 6. Key Design Decisions
+## 8. Key Design Decisions
 
 1. **Declarative scenarios**: Infrastructure defined in YAML, not code
 2. **Deterministic simulation**: Seeded RNG ensures reproducible results
 3. **Extensible strategies**: New strategies require only implementing one method
 4. **Separation of concerns**: Planning logic decoupled from simulation execution
+5. **Constraint-aware planning**: Strategies check min_up during plan generation, not just execution
 
 
