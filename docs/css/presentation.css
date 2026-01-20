@@ -1,0 +1,367 @@
+/* PatchPlanner Reveal.js Presentation Styles */
+
+/* ===== ROOT VARIABLES ===== */
+:root {
+    --r-heading-color: #58a6ff;
+    --r-link-color: #58a6ff;
+    --color-primary: #58a6ff;
+    --color-success: #7ee787;
+    --color-warning: #f0883e;
+    --color-danger: #f85149;
+    --color-purple: #a371f7;
+    --color-muted: #8b949e;
+    --color-bg-secondary: #21262d;
+    --color-border: #30363d;
+}
+
+/* ===== BASE STYLES ===== */
+.reveal h1,
+.reveal h2,
+.reveal h3 {
+    text-transform: none;
+}
+
+.reveal h1 {
+    font-size: 2.2em;
+}
+
+.reveal h2 {
+    font-size: 1.6em;
+    color: var(--color-primary);
+}
+
+.reveal h3 {
+    font-size: 1.2em;
+    color: var(--color-muted);
+}
+
+.reveal section {
+    text-align: left;
+}
+
+.reveal ul {
+    margin-left: 1em;
+}
+
+.reveal li {
+    margin-bottom: 0.5em;
+}
+
+/* ===== CODE STYLES ===== */
+.reveal code {
+    background: #161b22;
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    font-size: 0.85em;
+}
+
+.reveal pre code {
+    padding: 1em;
+}
+
+/* ===== TABLE STYLES ===== */
+.reveal table {
+    font-size: 0.7em;
+    margin: 0 auto;
+}
+
+.reveal th {
+    background: #238636;
+    color: white;
+    padding: 0.5em;
+}
+
+.reveal td {
+    padding: 0.4em 0.8em;
+    border-bottom: 1px solid var(--color-border);
+}
+
+/* ===== COLOR UTILITY CLASSES ===== */
+.highlight {
+    color: var(--color-success);
+    font-weight: bold;
+}
+
+.warning {
+    color: var(--color-danger);
+}
+
+.info {
+    color: var(--color-primary);
+}
+
+.strategy-good {
+    color: var(--color-success);
+}
+
+.strategy-bad {
+    color: var(--color-danger);
+}
+
+.strategy-neutral {
+    color: var(--color-warning);
+}
+
+/* ===== RESULT TABLE STYLES ===== */
+.result-best {
+    background: #238636 !important;
+    color: white;
+    font-weight: bold;
+}
+
+.result-fail {
+    background: var(--color-danger) !important;
+    color: white;
+}
+
+/* ===== LAYOUT COMPONENTS ===== */
+.two-columns {
+    display: flex;
+    gap: 2em;
+}
+
+.two-columns > div {
+    flex: 1;
+}
+
+/* ===== PIPELINE VISUALIZATION ===== */
+.pipeline-container {
+    text-align: center;
+    margin: 2em 0;
+}
+
+.pipeline-box {
+    display: inline-block;
+    border: 2px solid var(--color-primary);
+    padding: 0.5em 1em;
+    margin: 0.3em;
+    border-radius: 8px;
+    background: var(--color-bg-secondary);
+}
+
+.pipeline-box small {
+    display: block;
+    color: var(--color-muted);
+}
+
+.arrow {
+    color: var(--color-primary);
+    font-size: 1.5em;
+    margin: 0 0.3em;
+}
+
+/* ===== CARD GRID ===== */
+.card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5em;
+    margin-top: 1em;
+}
+
+.card {
+    background: var(--color-bg-secondary);
+    padding: 1em;
+    border-radius: 8px;
+    border-left: 4px solid var(--color-primary);
+}
+
+.card.success {
+    border-left-color: var(--color-success);
+}
+
+.card.warning {
+    border-left-color: var(--color-warning);
+}
+
+.card.purple {
+    border-left-color: var(--color-purple);
+}
+
+.card.danger {
+    border-left-color: var(--color-danger);
+}
+
+.card h3 {
+    margin: 0 0 0.5em 0;
+    color: inherit;
+}
+
+.card p {
+    margin: 0;
+    color: var(--color-muted);
+}
+
+/* ===== FINDING CARDS ===== */
+.finding {
+    background: var(--color-bg-secondary);
+    padding: 1em;
+    margin: 0.5em 0;
+    border-radius: 8px;
+    border-left: 4px solid var(--color-primary);
+}
+
+.finding p {
+    margin: 0.5em 0 0 0;
+    color: var(--color-muted);
+}
+
+/* ===== BOX COMPONENTS ===== */
+.stat-box {
+    text-align: center;
+    background: var(--color-bg-secondary);
+    padding: 0.8em;
+    border-radius: 8px;
+}
+
+.formula-box {
+    text-align: center;
+    background: var(--color-bg-secondary);
+    padding: 1em;
+    border-radius: 8px;
+    font-family: monospace;
+}
+
+.thank-you-box {
+    text-align: center;
+    background: var(--color-bg-secondary);
+    padding: 1.5em;
+    border-radius: 8px;
+}
+
+.thank-you-box h2 {
+    color: var(--color-primary);
+    margin: 0;
+}
+
+.thank-you-box p {
+    margin: 0.5em 0 0 0;
+    color: var(--color-muted);
+}
+
+.thank-you-box .repo {
+    margin-top: 1em;
+    font-size: 0.8em;
+}
+
+/* ===== TECH STACK ===== */
+.tech-stack code {
+    margin-right: 0.5em;
+}
+
+/* ===== RESPONSIVE STYLES ===== */
+
+/* Tablet and smaller */
+@media screen and (max-width: 1024px) {
+    .reveal h1 {
+        font-size: 1.8em;
+    }
+
+    .reveal h2 {
+        font-size: 1.4em;
+    }
+
+    .reveal h3 {
+        font-size: 1em;
+    }
+
+    .reveal table {
+        font-size: 0.6em;
+    }
+
+    .two-columns {
+        flex-direction: column;
+        gap: 1em;
+    }
+
+    .card-grid {
+        grid-template-columns: 1fr;
+        gap: 1em;
+    }
+
+    .pipeline-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .pipeline-box {
+        width: 80%;
+        margin: 0.5em 0;
+    }
+
+    .arrow {
+        transform: rotate(90deg);
+        margin: 0.2em 0;
+    }
+}
+
+/* Mobile */
+@media screen and (max-width: 600px) {
+    .reveal h1 {
+        font-size: 1.5em;
+    }
+
+    .reveal h2 {
+        font-size: 1.2em;
+    }
+
+    .reveal h3 {
+        font-size: 0.9em;
+    }
+
+    .reveal section {
+        padding: 0.5em;
+    }
+
+    .reveal ul {
+        margin-left: 0.5em;
+        font-size: 0.9em;
+    }
+
+    .reveal li {
+        margin-bottom: 0.3em;
+    }
+
+    .reveal table {
+        font-size: 0.5em;
+    }
+
+    .reveal th,
+    .reveal td {
+        padding: 0.3em 0.4em;
+    }
+
+    .pipeline-box {
+        padding: 0.4em 0.8em;
+        font-size: 0.85em;
+    }
+
+    .card {
+        padding: 0.8em;
+    }
+
+    .finding {
+        padding: 0.8em;
+    }
+
+    .tech-stack code {
+        display: inline-block;
+        margin: 0.2em;
+        font-size: 0.75em;
+    }
+}
+
+/* Print styles */
+@media print {
+    .reveal section {
+        page-break-inside: avoid;
+    }
+
+    .reveal .notes {
+        display: block;
+        border-top: 1px solid #ccc;
+        padding-top: 1em;
+        margin-top: 1em;
+        font-size: 0.8em;
+    }
+}

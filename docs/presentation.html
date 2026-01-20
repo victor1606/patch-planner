@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PatchPlanner - Security Patch Deployment Strategies</title>
+    
+    <!-- Reveal.js Core CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/night.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/monokai.min.css">
+    
+    <!-- Custom Presentation Styles -->
+    <link rel="stylesheet" href="css/presentation.css">
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+            
+            <!-- SLIDE 1: Title -->
+            <section>
+                <h1>PatchPlanner</h1>
+                <h3>A Simulation Framework for Evaluating Security Patch Deployment Strategies in Critical Infrastructure</h3>
+                <br>
+                <p style="text-align: center; color: #8b949e;">
+                    Dependable Systems SCPD<br>
+                    January 2026
+                </p>
+                <h5>Calugaritoiu Ion-Victor</h5>
+                <aside class="notes">
+                    [RO] <strong>TEMA:</strong> Strategii de Aplicare a Patch-urilor de Securitate în Infrastructuri Critice.<br>
+                    Proiect: <strong>PatchPlanner</strong> - simulator cu evenimente discrete.<br><br>
+
+                    <strong>PROBLEMA:</strong><br>
+                    • Sistemele critice trebuie să aplice patch-uri de securitate<br>
+                    • Nu tolerează downtime (spitale, bănci, control industrial)<br>
+                    • Abordările naive "patch everything" încalcă cerințele de disponibilitate<br>
+                    • Nu există framework cantitativ pentru compararea strategiilor<br><br>
+
+                    <strong>SOLUȚIA MEA:</strong><br>
+                    • Scris în Python 3.11+<br>
+                    • Modelează infrastructura ca graf de dependențe<br>
+                    • Implementează 7 strategii de deployment<br>
+                    • Măsoară compromisul securitate vs. disponibilitate cu metrici precise<br><br>
+
+                    ---<br><br>
+
+                    [EN] <strong>TOPIC:</strong> Security Patch Deployment Strategies in Critical Infrastructure.<br>
+                    Project: <strong>PatchPlanner</strong> - discrete event simulator.<br><br>
+
+                    <strong>THE PROBLEM:</strong><br>
+                    • Critical systems must apply security patches<br>
+                    • Cannot tolerate downtime (hospitals, banks, industrial control)<br>
+                    • Naive "patch everything" approaches violate availability requirements<br>
+                    • No quantitative framework to compare deployment strategies<br><br>
+
+                    <strong>MY SOLUTION:</strong><br>
+                    • Written in Python 3.11+<br>
+                    • Models infrastructure as dependency graph<br>
+                    • Implements 7 deployment strategies<br>
+                    • Measures security exposure vs. availability trade-offs with precise metrics
+                </aside>
+            </section>
+
+            <!-- SLIDE 2: The Problem -->
+            <section>
+                <h2>The Problem</h2>
+                <h3>Security vs. Availability Trade-off</h3>
+                
+                <div class="two-columns">
+                    <div>
+                        <p><strong>The Dilemma:</strong></p>
+                        <ul>
+                            <li>Patches must be applied <span class="highlight">quickly</span></li>
+                            <li>Patching causes <span class="warning">downtime</span></li>
+                            <li>Critical systems have <span class="info">strict availability</span></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p><strong>Complexity Factors:</strong></p>
+                        <ul>
+                            <li>Component dependencies</li>
+                            <li>Version compatibility</li>
+                            <li>Patch failure probability</li>
+                            <li>Minimum instances (<code>min_up</code>)</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <br>
+                <div class="stat-box">
+                    Average patch delay: <strong class="warning">60-150 days</strong> between publication and application
+                </div>
+                
+                <aside class="notes">
+                    [RO] <strong>TENSIUNEA PRINCIPALĂ:</strong><br>
+                    • Patch-urile CVE au întârziere medie de 60-150 zile<br>
+                    • Fiecare zi fără patch = risc de exploatare<br>
+                    • Dar aplicarea patch-ului necesită restart/reboot = downtime<br><br>
+
+                    <strong>CONSTRÂNGERI TEHNICE:</strong><br>
+                    • <strong>Dependențe:</strong> web → api → auth → db. Nu poți aplica patch-uri în ordine greșită.<br>
+                    • <strong>Compatibilitate versiuni:</strong> COMPATIBLE (OK), DEGRADED (performanță), INCOMPATIBLE (se strică)<br>
+                    • <strong>Probabilitate de eșec:</strong> Patch-urile eșuează 2-20% din timp. Necesită rollback.<br>
+                    • <strong>Constrângere min_up:</strong> Dacă serviciul are 3 replici și min_up=2, doar 1 poate fi down.<br><br>
+
+                    <strong>FORMALIZARE:</strong><br>
+                    Dat fiind graful G=(V,E) cu constrângeri, găsește ordinea de patch-uri care minimizează exposure_time × severity menținând min_up pentru toate serviciile.<br><br>
+
+                    ---<br><br>
+
+                    [EN] <strong>CORE TENSION:</strong><br>
+                    • CVE patches have 60-150 day average delay<br>
+                    • Every day unpatched = exploitation risk<br>
+                    • But patching requires service restart/reboot = downtime<br><br>
+
+                    <strong>TECHNICAL CONSTRAINTS:</strong><br>
+                    • <strong>Dependencies:</strong> web → api → auth → db. Can't patch in wrong order.<br>
+                    • <strong>Version compatibility:</strong> COMPATIBLE (OK), DEGRADED (performance), INCOMPATIBLE (breaks)<br>
+                    • <strong>Failure probability:</strong> Patches fail 2-20% of the time. Need rollback.<br>
+                    • <strong>min_up constraint:</strong> If service has 3 replicas and min_up=2, only 1 can be down.<br><br>
+
+                    <strong>FORMALIZATION:</strong><br>
+                    Given graph G=(V,E) with constraints, find patch ordering that minimizes exposure_time × severity while maintaining min_up for all services.
+                </aside>
+            </section>
+
+            <!-- SLIDE 3: Objectives -->
+            <section>
+                <h2>Project Objectives</h2>
+                
+                <div class="card-grid">
+                    <div class="card">
+                        <h3>1. Infrastructure Modeling</h3>
+                        <p>Dependency graph with availability constraints</p>
+                    </div>
+                    <div class="card success">
+                        <h3>2. Strategy Comparison</h3>
+                        <p>7 deployment strategies implemented</p>
+                    </div>
+                    <div class="card warning">
+                        <h3>3. Quantitative Evaluation</h3>
+                        <p>Metrics for security vs. availability</p>
+                    </div>
+                    <div class="card purple">
+                        <h3>4. Decision Support</h3>
+                        <p>Recommendations for operators</p>
+                    </div>
+                </div>
+                
+                <aside class="notes">
+                    [RO] <strong>OBIECTIV 1 - MODELARE:</strong><br>Reprezentare infrastructură ca graf orientat. Nodurile au: criticality (1-5), severity (CVSS 0-10), patch_duration, failure_probability, min_up. Muchiile au niveluri de compatibilitate.<br><br>
+
+                    <strong>OBIECTIV 2 - STRATEGII:</strong><br>Implementare 7 strategii cu compromisuri diferite viteză/siguranță. Fiecare generează un PatchPlan cu pași ordonați.<br><br>
+
+                    <strong>OBIECTIV 3 - METRICI:</strong><br>Cuantificare precisă a compromisurilor:<br>
+                    • exposure_window_weighted = Σ(unpatched_time × severity × criticality)<br>
+                    &nbsp;&nbsp;◦ unpatched_time = secunde cât nodul rămâne VULNERABIL (de la start până la finalizarea patch-ului)<br>
+                    &nbsp;&nbsp;◦ severity = scor CVSS (0-10), cât de critică e vulnerabilitatea<br>
+                    &nbsp;&nbsp;◦ criticality = importanța nodului (1-5)<br>
+                    &nbsp;&nbsp;◦ Exemplu: nod api-1 cu severity=7.0, criticality=4, patch la t=180s → contribuție = 180 × 7.0 × 4 = 5,040<br>
+                    &nbsp;&nbsp;◦ VALOARE MAI MICĂ = MAI BINE (mai puțin timp pentru atacatori să exploateze)<br>
+                    • node_unavailability_seconds = Σ(nodes_down × duration) - downtime cumulat per nod<br>
+                    • rollback_count, mixed_version_time, incompatibility_violations<br><br>
+
+                    <strong>OBIECTIV 4 - SUPORT DECIZIONAL:</strong><br>Dat fiind YAML-ul infrastructurii, simulează toate strategiile, compară metricile, recomandă abordarea optimă pentru topologia specifică.
+
+                    ---
+
+                    [EN] <strong>OBJECTIVE 1 - MODELING:</strong><br>Represent infrastructure as directed graph. Nodes have: criticality (1-5), severity (CVSS 0-10), patch_duration, failure_probability, min_up. Edges have compatibility levels.<br><br>
+
+                    <strong>OBJECTIVE 2 - STRATEGIES:</strong><br>Implement 7 strategies with different speed/safety trade-offs. Each generates a PatchPlan with ordered steps.<br><br>
+
+                    <strong>OBJECTIVE 3 - METRICS:</strong><br>Quantify trade-offs precisely:<br>
+                    • exposure_window_weighted = Σ(unpatched_time × severity × criticality)<br>
+                    &nbsp;&nbsp;◦ seconds the node remains VULNERABLE (from simulation start until patch completes)<br>
+                    &nbsp;&nbsp;◦ severity = CVSS score (0-10), how critical the vulnerability is<br>
+                    &nbsp;&nbsp;◦ criticality = node importance (1-5)<br>
+                    &nbsp;&nbsp;◦ Example: node api-1 with severity=7.0, criticality=4, patched at t=180s → contribution = 180 × 7.0 × 4 = 5,040<br>
+                    &nbsp;&nbsp;◦ LOWER VALUE = BETTER (less time for attackers to exploit)<br>
+                    • node_unavailability_seconds = Σ(nodes_down × duration) - cumulative downtime per node<br>
+                    • rollback_count, mixed_version_time, incompatibility_violations<br><br>
+
+                    <strong>OBJECTIVE 4 - DECISION SUPPORT:</strong><br>Given infrastructure YAML, simulate all strategies, compare metrics, recommend optimal approach for the specific topology.
+                </aside>
+            </section>
+
+            <!-- SLIDE 4: Architecture -->
+            <section>
+                <h2>System Architecture</h2>
+                <h3>Four-Stage Pipeline</h3>
+                
+                <div class="pipeline-container">
+                    <span class="pipeline-box">INPUT<br><small>Infrastructure Definition</small></span>
+                    <span class="arrow">→</span>
+                    <span class="pipeline-box">PLANNING<br><small>Strategy Selection</small></span>
+                    <span class="arrow">→</span>
+                    <span class="pipeline-box">SIMULATION<br><small>Virtual Execution</small></span>
+                    <span class="arrow">→</span>
+                    <span class="pipeline-box">OUTPUT<br><small>Metrics &amp; Comparison</small></span>
+                </div>
+                
+                <br>
+                <div class="two-columns">
+                    <div>
+                        <p><strong>Key Features:</strong></p>
+                        <ul>
+                            <li>Constraint verification before each step</li>
+                            <li>Probabilistic failure simulation</li>
+                            <li>Automatic rollback handling</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p><strong>Reproducibility:</strong></p>
+                        <ul>
+                            <li>Seeded random number generator</li>
+                            <li>Deterministic results</li>
+                            <li>Same input → same output</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <aside class="notes">
+                    [RO] <strong>ARHITECTURA PIPELINE - 4 ETAPE:</strong><br><br>
+
+                    <strong>1. INPUT - Definirea Infrastructurii:</strong><br>
+                    • Operatorul descrie infrastructura într-un fișier YAML<br>
+                    • Fiecare nod are: tip (host/serviciu/DB), criticitate, severitate vulnerabilitate, durata patch-ului<br>
+                    • Muchiile definesc dependențele și nivelul de compatibilitate între versiuni<br>
+                    • Sistemul validează automat schema și construiește graful de dependențe<br><br>
+
+                    <strong>2. PLANNING - Generarea Planului:</strong><br>
+                    • Strategia aleasă analizează graful și constrângerile<br>
+                    • Calculează câte noduri pot fi down simultan per serviciu (total - min_up)<br>
+                    • Generează o secvență ordonată de pași de patch<br>
+                    • Fiecare pas specifică: ce noduri, în ce ordine, cu ce parametri<br><br>
+
+                    <strong>3. SIMULARE - Execuția Virtuală:</strong><br>
+                    • Motorul de simulare execută planul cu un ceas virtual<br>
+                    • La fiecare pas: marchează nodurile ca indisponibile, avansează timpul, verifică eșecurile<br>
+                    • Eșecurile sunt determinate probabilistic (cu seed pentru reproductibilitate)<br>
+                    • Dacă un patch eșuează → rollback automat și reîncearcă<br>
+                    • Verifică constrângerile ÎNAINTE de fiecare acțiune - oprește dacă ar încălca min_up<br><br>
+
+                    <strong>4. OUTPUT - Raportare:</strong><br>
+                    • Rezultatul conține toate metricile: timp total, expunere, indisponibilitate, rollback-uri<br>
+                    • Exportă în multiple formate pentru analiză ulterioară<br>
+                    • Permite comparația obiectivă între strategii<br><br>
+
+                    ---<br><br>
+
+                    [EN] <strong>PIPELINE ARCHITECTURE - 4 STAGES:</strong><br><br>
+
+                    <strong>1. INPUT - Infrastructure Definition:</strong><br>
+                    • Operator describes infrastructure in a YAML file<br>
+                    • Each node has: type (host/service/DB), criticality, vulnerability severity, patch duration<br>
+                    • Edges define dependencies and version compatibility levels<br>
+                    • System automatically validates schema and builds dependency graph<br><br>
+
+                    <strong>2. PLANNING - Plan Generation:</strong><br>
+                    • Selected strategy analyzes the graph and constraints<br>
+                    • Calculates how many nodes can be down simultaneously per service (total - min_up)<br>
+                    • Generates an ordered sequence of patch steps<br>
+                    • Each step specifies: which nodes, in what order, with what parameters<br><br>
+
+                    <strong>3. SIMULATION - Virtual Execution:</strong><br>
+                    • Simulation engine executes the plan with a virtual clock<br>
+                    • At each step: marks nodes unavailable, advances time, checks for failures<br>
+                    • Failures are probabilistically determined (seeded for reproducibility)<br>
+                    • If a patch fails → automatic rollback and retry<br>
+                    • Checks constraints BEFORE each action - stops if it would violate min_up<br><br>
+
+                    <strong>4. OUTPUT - Reporting:</strong><br>
+                    • Result contains all metrics: total time, exposure, unavailability, rollbacks<br>
+                    • Exports in multiple formats for further analysis<br>
+                    • Enables objective comparison between strategies
+                </aside>
+            </section>
+
+            <!-- SLIDE 5: Data Model -->
+            <section>
+                <h2>Data Model</h2>
+                <h3>Infrastructure as a Graph</h3>
+                
+                <div class="two-columns">
+                    <div>
+                        <p><strong>Graph G = (V, E)</strong></p>
+                        <ul>
+                            <li><strong>V:</strong> Hosts, services, databases</li>
+                            <li><strong>E:</strong> Dependencies between nodes</li>
+                        </ul>
+                        
+                        <br>
+                        <p><strong>Edge Compatibility:</strong></p>
+                        <ul>
+                            <li><span class="strategy-good">COMPATIBLE</span> - versions can differ</li>
+                            <li><span class="strategy-neutral">DEGRADED</span> - performance impact</li>
+                            <li><span class="strategy-bad">INCOMPATIBLE</span> - must patch together</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p><strong>Node Properties:</strong></p>
+                        <table>
+                            <tr><th>Property</th><th>Description</th></tr>
+                            <tr><td>Criticality</td><td>Importance level (1-5)</td></tr>
+                            <tr><td>Severity</td><td>Vulnerability risk (0-10)</td></tr>
+                            <tr><td>Patch Duration</td><td>Time to apply patch</td></tr>
+                            <tr><td>Failure Rate</td><td>Chance of patch failure</td></tr>
+                            <tr><td>Min Up</td><td>Required healthy instances</td></tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <aside class="notes">
+                    [RO] <strong>MODEL GRAF:</strong> G = (V, E) unde V = noduri infrastructură, E = dependențe.<br><br>
+
+                    <strong>PROPRIETĂȚI NOD:</strong><br>
+                    • <strong>Criticitate:</strong> scară 1-5, cât de important e nodul pentru business<br>
+                    • <strong>Severitate:</strong> scor CVSS 0-10, cât de gravă e vulnerabilitatea<br>
+                    • <strong>Durata patch:</strong> secunde necesare pentru aplicare (30s-180s tipic)<br>
+                    • <strong>Rată eșec:</strong> 1-20%, declanșează rollback la eșec<br>
+                    • <strong>Min Up:</strong> instanțe minime sănătoase per serviciu<br><br>
+
+                    <strong>COMPATIBILITATE MUCHII:</strong><br>
+                    • <strong>COMPATIBLE:</strong> Versiuni mixte funcționează fără probleme<br>
+                    • <strong>DEGRADED:</strong> Funcționează dar cu performanță redusă<br>
+                    • <strong>INCOMPATIBLE:</strong> Nu funcționează dacă nodurile conectate au versiuni diferite<br><br>
+
+                    <strong>CONSTRÂNGERE CHEIE:</strong><br>
+                    Pentru un serviciu cu N noduri și min_up=M → putem opri maximum (N-M) noduri simultan.<br>
+                    Exemplu: 3 servere web cu min_up=2 → doar 1 poate fi down la un moment dat.<br><br>
+
+                    ---<br><br>
+
+                    [EN] <strong>GRAPH MODEL:</strong> G = (V, E) where V = infrastructure nodes, E = dependencies.<br><br>
+
+                    <strong>NODE PROPERTIES:</strong><br>
+                    • <strong>Criticality:</strong> 1-5 scale, how important the node is for business<br>
+                    • <strong>Severity:</strong> CVSS score 0-10, how severe the vulnerability is<br>
+                    • <strong>Patch Duration:</strong> seconds needed to apply (30s-180s typical)<br>
+                    • <strong>Failure Rate:</strong> 1-20%, triggers rollback on failure<br>
+                    • <strong>Min Up:</strong> minimum healthy instances per service<br><br>
+
+                    <strong>EDGE COMPATIBILITY:</strong><br>
+                    • <strong>COMPATIBLE:</strong> Mixed versions work without issues<br>
+                    • <strong>DEGRADED:</strong> Works but with reduced performance<br>
+                    • <strong>INCOMPATIBLE:</strong> Doesn't work if connected nodes have different versions<br><br>
+
+                    <strong>KEY CONSTRAINT:</strong><br>
+                    For a service with N nodes and min_up=M → we can stop maximum (N-M) nodes simultaneously.<br>
+                    Example: 3 web servers with min_up=2 → only 1 can be down at any time.
+                </aside>
+            </section>
+
+            <!-- SLIDE 6: Strategies Part 1 -->
+            <section>
+                <h2>Deployment Strategies (1/2)</h2>
+                
+                <table style="width: 100%;">
+                    <tr>
+                        <th>Strategy</th>
+                        <th>How It Works</th>
+                        <th>Trade-off</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Big Bang</strong></td>
+                        <td>Patch all nodes simultaneously</td>
+                        <td><span class="strategy-bad">Violates availability</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Rolling</strong></td>
+                        <td>Sequential, one node at a time</td>
+                        <td><span class="strategy-good">Safe</span> but <span class="strategy-neutral">slow</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Batch Rolling</strong></td>
+                        <td>Parallel groups across services</td>
+                        <td><span class="strategy-neutral">Balanced speed/safety</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Blue-Green</strong></td>
+                        <td>Shadow environment, instant switch</td>
+                        <td><span class="strategy-good">Zero downtime</span>, needs 2x capacity</td>
+                    </tr>
+                </table>
+                
+                <aside class="notes">
+                    [RO] <strong>CUM FUNCȚIONEAZĂ STRATEGIILE:</strong><br><br>
+
+                    <strong>BIG BANG - Totul Deodată:</strong><br>
+                    • Ideea: Aplică patch-ul la TOATE nodurile simultan<br>
+                    • Avantaj teoretic: Cel mai rapid posibil - un singur pas<br>
+                    • Problemă: Încalcă aproape întotdeauna constrângerile de disponibilitate<br>
+                    • Dacă ai 3 servere web și min_up=2, nu poți opri toate 3 simultan<br>
+                    • Folosit ca baseline pentru a demonstra că abordările naive nu funcționează<br><br>
+
+                    <strong>ROLLING - Unul Câte Unul:</strong><br>
+                    • Ideea: Aplică patch pe rând, serviciu cu serviciu<br>
+                    • Pentru fiecare serviciu, calculează câte noduri pot fi down (ex: 3 noduri, min_up=2 → max 1 down)<br>
+                    • Aplică patch la primul nod, așteaptă să termine, apoi următorul<br>
+                    • Avantaj: Garantează disponibilitatea, predictibil<br>
+                    • Dezavantaj: Lent - fiecare nod așteaptă după precedentul<br><br>
+
+                    <strong>BATCH ROLLING - Grupuri Paralele:</strong><br>
+                    • Ideea: Ca Rolling, dar aplică patch la mai multe noduri în paralel<br>
+                    • Grupează noduri din servicii diferite care pot fi oprite simultan<br>
+                    • Ex: web-1 + api-1 + auth-1 în același timp (din servicii diferite)<br>
+                    • Avantaj: Mai rapid decât Rolling simplu<br>
+                    • Risc: Mai multe eșecuri potențiale per batch<br><br>
+
+                    <strong>BLUE-GREEN - Mediu Paralel:</strong><br>
+                    • Ideea: Pregătește un mediu "green" complet patch-uit în paralel<br>
+                    • Traficul rămâne pe mediul "blue" (vechi) în timp ce green se pregătește<br>
+                    • Când toate nodurile green sunt gata → switch instant de trafic<br>
+                    • Avantaj: Zero downtime vizibil pentru utilizatori<br>
+                    • Cerință: Necesită dublă capacitate (2x servere)<br><br>
+
+                    ---<br><br>
+
+                    [EN] <strong>HOW THE STRATEGIES WORK:</strong><br><br>
+
+                    <strong>BIG BANG - All At Once:</strong><br>
+                    • Idea: Apply patch to ALL nodes simultaneously<br>
+                    • Theoretical advantage: Fastest possible - single step<br>
+                    • Problem: Almost always violates availability constraints<br>
+                    • If you have 3 web servers and min_up=2, you can't stop all 3 at once<br>
+                    • Used as baseline to demonstrate naive approaches don't work<br><br>
+
+                    <strong>ROLLING - One By One:</strong><br>
+                    • Idea: Apply patches sequentially, service by service<br>
+                    • For each service, calculate how many nodes can be down (e.g., 3 nodes, min_up=2 → max 1 down)<br>
+                    • Patch first node, wait for completion, then next<br>
+                    • Advantage: Guarantees availability, predictable<br>
+                    • Disadvantage: Slow - each node waits for the previous one<br><br>
+
+                    <strong>BATCH ROLLING - Parallel Groups:</strong><br>
+                    • Idea: Like Rolling, but patches multiple nodes in parallel<br>
+                    • Groups nodes from different services that can be stopped simultaneously<br>
+                    • E.g., web-1 + api-1 + auth-1 at the same time (from different services)<br>
+                    • Advantage: Faster than simple Rolling<br>
+                    • Risk: More potential failures per batch<br><br>
+
+                    <strong>BLUE-GREEN - Parallel Environment:</strong><br>
+                    • Idea: Prepare a fully-patched "green" environment in parallel<br>
+                    • Traffic stays on "blue" (old) environment while green is being prepared<br>
+                    • When all green nodes ready → instant traffic switch<br>
+                    • Advantage: Zero visible downtime for users<br>
+                    • Requirement: Needs double capacity (2x servers)
+                </aside>
+            </section>
+
+            <!-- SLIDE 7: Strategies Part 2 -->
+            <section>
+                <h2>Deployment Strategies (2/2)</h2>
+                
+                <table style="width: 100%;">
+                    <tr>
+                        <th>Strategy</th>
+                        <th>How It Works</th>
+                        <th>Trade-off</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Canary</strong></td>
+                        <td>Test on subset first, observe, then continue</td>
+                        <td><span class="strategy-good">Early problem detection</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Dep-Greedy</strong></td>
+                        <td>Follow dependency order (leaves first)</td>
+                        <td><span class="strategy-neutral">Minimizes version conflicts</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Hybrid</strong></td>
+                        <td>Adapts strategy based on node risk</td>
+                        <td><span class="strategy-good">Safest</span> but <span class="strategy-neutral">slowest</span></td>
+                    </tr>
+                </table>
+                
+                <br>
+                <p><strong>Key Insight:</strong> Each strategy makes different assumptions about infrastructure capacity and risk tolerance.</p>
+                
+                <aside class="notes">
+                    [RO] <strong>CUM FUNCȚIONEAZĂ STRATEGIILE (CONTINUARE):</strong><br><br>
+
+                    <strong>CANARY - Testare Progresivă:</strong><br>
+                    • Ideea: Testează patch-ul pe câteva noduri înainte de deployment complet<br>
+                    • Faza 1: Selectează 1 nod "canary" din fiecare serviciu<br>
+                    • Aplică patch-ul doar pe canary-uri și observă comportamentul (60 secunde)<br>
+                    • Faza 2: Dacă canary-urile funcționează corect → continuă cu restul nodurilor<br>
+                    • Avantaj: Detectare timpurie a problemelor cu impact minim<br>
+                    • Dezavantaj: Adaugă timp suplimentar pentru observare<br><br>
+
+                    <strong>DEP-GREEDY - Ordine Topologică:</strong><br>
+                    • Ideea: Aplică patch-uri respectând ordinea dependențelor<br>
+                    • Începe cu nodurile fără dependenți (baze de date, servicii de bază)<br>
+                    • Continuă cu nodurile care depind de cele deja patch-uite (API-uri)<br>
+                    • Termină cu nodurile de frontend care depind de toate celelalte<br>
+                    • Avantaj: Minimizează timpul în care versiunile sunt mixte<br>
+                    • Logica: Dacă DB e patch-uit și API nu → incompatibilitate potențială<br><br>
+
+                    <strong>HYBRID - Adaptiv Bazat pe Risc:</strong><br>
+                    • Ideea: Combină mai multe strategii în funcție de riscul fiecărui nod<br>
+                    • Calculează un scor de risc: severitate × criticitate × conexiuni<br>
+                    • Noduri cu risc ridicat → tratate cu Blue-Green (mai sigur)<br>
+                    • Noduri cu risc scăzut → tratate cu Rolling (mai rapid)<br>
+                    • Adaugă pauze de siguranță între grupuri pentru a detecta probleme<br>
+                    • Avantaj: Compromis inteligent între viteză și siguranță<br>
+                    • Dezavantaj: Cel mai lent din cauza pauzelor de precauție<br><br>
+
+                    ---<br><br>
+
+                    [EN] <strong>HOW THE STRATEGIES WORK (CONTINUED):</strong><br><br>
+
+                    <strong>CANARY - Progressive Testing:</strong><br>
+                    • Idea: Test the patch on a few nodes before full deployment<br>
+                    • Phase 1: Select 1 "canary" node from each service<br>
+                    • Apply patch only to canaries and observe behavior (60 seconds)<br>
+                    • Phase 2: If canaries work correctly → continue with remaining nodes<br>
+                    • Advantage: Early problem detection with minimal impact<br>
+                    • Disadvantage: Adds extra time for observation<br><br>
+
+                    <strong>DEP-GREEDY - Topological Order:</strong><br>
+                    • Idea: Apply patches respecting dependency order<br>
+                    • Start with nodes that have no dependents (databases, core services)<br>
+                    • Continue with nodes that depend on already-patched ones (APIs)<br>
+                    • Finish with frontend nodes that depend on everything else<br>
+                    • Advantage: Minimizes time with mixed versions<br>
+                    • Logic: If DB is patched and API isn't → potential incompatibility<br><br>
+
+                    <strong>HYBRID - Risk-Based Adaptive:</strong><br>
+                    • Idea: Combines multiple strategies based on each node's risk<br>
+                    • Calculates a risk score: severity × criticality × connections<br>
+                    • High-risk nodes → treated with Blue-Green (safer)<br>
+                    • Low-risk nodes → treated with Rolling (faster)<br>
+                    • Adds safety pauses between groups to detect problems<br>
+                    • Advantage: Smart trade-off between speed and safety<br>
+                    • Disadvantage: Slowest due to precautionary pauses
+                </aside>
+            </section>
+
+            <!-- SLIDE 8: Results -->
+            <section>
+                <h2>Results</h2>
+                <h3>Scenario 1: HA Microservices (13 nodes)</h3>
+                
+                <table style="width: 100%; font-size: 0.8em;">
+                    <tr>
+                        <th>Strategy</th>
+                        <th>Time (s)</th>
+                        <th>Exposure</th>
+                        <th>Node Unavail.</th>
+                        <th>Rollbacks</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Blue-Green</strong></td>
+                        <td class="result-best">120</td>
+                        <td class="result-best">47,160</td>
+                        <td class="result-best">0</td>
+                        <td class="result-best">0</td>
+                    </tr>
+                    <tr>
+                        <td>Rolling</td>
+                        <td>315</td>
+                        <td>90,150</td>
+                        <td>1,425</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>Canary</td>
+                        <td>375</td>
+                        <td>106,920</td>
+                        <td>1,425</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>Batch Rolling</td>
+                        <td>630</td>
+                        <td>162,255</td>
+                        <td>1,200</td>
+                        <td>3</td>
+                    </tr>
+                    <tr>
+                        <td>Hybrid</td>
+                        <td>1,350</td>
+                        <td>247,455</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>Big Bang</td>
+                        <td class="result-fail" colspan="4">FAILED - Availability Constraint Violated</td>
+                    </tr>
+                </table>
+                
+                <aside class="notes">
+                    [RO] <strong>SCENARIUL 1 - HA MICROSERVICES</strong> (seed=7):<br>
+                    • Topologie: 13 noduri - 2 hosts, 3 web, 3 api, 3 auth, 2 db<br>
+                    • min_up: web=2, api=2, auth=2, db=1<br>
+                    • Durate patch: hosts=120s, web=45s, api=60s, auth=30s, db=90s<br><br>
+
+                    <strong>CE ÎNSEAMNĂ EXPOSURE:</strong><br>
+                    • Formula: Σ(unpatched_time × severity × criticality)<br>
+                    • Măsoară RISCUL DE SECURITATE CUMULAT<br>
+                    • Blue-Green: 47,160 vs Rolling: 90,150 → ~52% mai puțin<br>
+                    • DE CE? Blue-Green termină în 120s, toate nodurile simultan<br><br>
+
+                    <strong>ANALIZĂ REZULTATE:</strong><br>
+                    • <strong>Big Bang:</strong> EȘUAT - "service=web healthy=0 min_up=2"<br>
+                    • <strong>Blue-Green:</strong> 120s, exposure=47,160, 0 unavail, 0 rollbacks<br>
+                    • <strong>Rolling:</strong> 315s, 1 rollback, 1,425 nod-secunde unavail<br>
+                    • <strong>Canary:</strong> 375s = Rolling + 60s observare<br>
+                    • <strong>Batch Rolling:</strong> 630s, 3 rollback-uri (batching agresiv)<br>
+                    • <strong>Hybrid:</strong> 1,350s (11x Blue-Green!), 0 rollbacks, 390s guardrail overhead<br><br>
+
+                    <strong>CONCLUZIE:</strong> Blue-Green domină TOATE metricile când capacitatea e disponibilă.<br><br>
+
+                    ---<br><br>
+
+                    [EN] <strong>SCENARIO 1 - HA MICROSERVICES</strong> (seed=7):<br>
+                    • Topology: 13 nodes - 2 hosts, 3 web, 3 api, 3 auth, 2 db<br>
+                    • min_up: web=2, api=2, auth=2, db=1<br>
+                    • Patch durations: hosts=120s, web=45s, api=60s, auth=30s, db=90s<br><br>
+
+                    <strong>WHAT EXPOSURE MEANS:</strong><br>
+                    • Formula: Σ(unpatched_time × severity × criticality)<br>
+                    • Measures CUMULATIVE SECURITY RISK<br>
+                    • Blue-Green: 47,160 vs Rolling: 90,150 → ~52% lower<br>
+                    • WHY? Blue-Green finishes in 120s, all nodes simultaneously<br><br>
+
+                    <strong>RESULT ANALYSIS:</strong><br>
+                    • <strong>Big Bang:</strong> FAILED - "service=web healthy=0 min_up=2"<br>
+                    • <strong>Blue-Green:</strong> 120s, exposure=47,160, 0 unavail, 0 rollbacks<br>
+                    • <strong>Rolling:</strong> 315s, 1 rollback, 1,425 node-seconds unavail<br>
+                    • <strong>Canary:</strong> 375s = Rolling + 60s observation<br>
+                    • <strong>Batch Rolling:</strong> 630s, 3 rollbacks (aggressive batching)<br>
+                    • <strong>Hybrid:</strong> 1,350s (11x Blue-Green!), 0 rollbacks, 390s guardrail overhead<br><br>
+
+                    <strong>KEY INSIGHT:</strong> Blue-Green dominates ALL metrics when capacity available.
+                </aside>
+            </section>
+
+            <!-- SLIDE 9: Key Findings -->
+            <section>
+                <h2>Scenarios 2 &amp; 3 Analysis</h2>
+                
+                <div class="two-columns">
+                    <div>
+                        <h3>Scenario 2: Compatibility Trap</h3>
+                        <p><small>4 nodes, INCOMPATIBLE edges</small></p>
+                        <ul style="font-size: 0.8em;">
+                            <li>Blue-Green: <strong>70s</strong>, exposure 9,310</li>
+                            <li>Rolling/DepGreedy: 140s</li>
+                            <li>BatchRolling: 2 incompatibility violations</li>
+                            <li>Hybrid: 1 rollback, 1 violation</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>Scenario 3: Patch Risk</h3>
+                        <p><small>3 nodes, 20% failure rate</small></p>
+                        <ul style="font-size: 0.8em;">
+                            <li>Blue-Green: <strong>180s</strong>, 0 rollbacks</li>
+                            <li>Rolling/BatchRolling: 1 rollback each</li>
+                            <li>Hybrid: 330s, 0 rollbacks (guardrails)</li>
+                            <li>Core host: no rollback support</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <aside class="notes">
+                    [RO] <strong>SCENARIUL 2 - CAPCANA COMPATIBILITĂȚII</strong> (seed=11):<br>
+                    • Topologie: 4 noduri - 2 edge (min_up=1), 2 control (min_up=1)<br>
+                    • Muchii INCOMPATIBLE între perechile edge→control<br>
+                    • Durate: edge=40s, control=70s<br><br>
+
+                    <strong>REZULTATE:</strong><br>
+                    • <strong>Big Bang:</strong> EȘUAT - "service=edge healthy=0 min_up=1"<br>
+                    • <strong>Blue-Green:</strong> 70s, exposure=9,310, 0 încălcări<br>
+                    • <strong>BatchRolling:</strong> 140s, 2 ÎNCĂLCĂRI INCOMPATIBILITATE<br>
+                    • <strong>Hybrid:</strong> 200s, 1 rollback, 1 încălcare<br><br>
+
+                    <strong>CONCLUZIE:</strong> Muchiile INCOMPATIBLE necesită ordonare atentă. Blue-Green evită problema prin switch simultan.<br><br>
+
+                    <strong>SCENARIUL 3 - RISC DE PATCH</strong> (seed=21):<br>
+                    • Topologie: 3 noduri - 1 core host, 2 senzori<br>
+                    • Core host: 20% eșec, <strong>rollback_supported=false!</strong><br>
+                    • Core: 180s, severity=9.0 (critic)<br><br>
+
+                    <strong>REZULTATE:</strong><br>
+                    • <strong>Big Bang:</strong> EȘUAT - "service=sensor healthy=0 min_up=1"<br>
+                    • <strong>Blue-Green:</strong> 180s, 0 rollbacks, 0 unavail<br>
+                    • <strong>Rolling:</strong> 210s, 1 rollback pe senzor<br>
+                    • <strong>Hybrid:</strong> 330s, 0 rollbacks (90s guardrail overhead)<br><br>
+
+                    <strong>CONCLUZIE CRITICĂ:</strong> Dacă core-ul eșuează, NU există recuperare. Blue-Green shadow = singura abordare sigură.<br><br>
+
+                    ---<br><br>
+
+                    [EN] <strong>SCENARIO 2 - COMPATIBILITY TRAP</strong> (seed=11):<br>
+                    • Topology: 4 nodes - 2 edge (min_up=1), 2 control (min_up=1)<br>
+                    • INCOMPATIBLE edges between edge→control pairs<br>
+                    • Durations: edge=40s, control=70s<br><br>
+
+                    <strong>RESULTS:</strong><br>
+                    • <strong>Big Bang:</strong> FAILED - "service=edge healthy=0 min_up=1"<br>
+                    • <strong>Blue-Green:</strong> 70s, exposure=9,310, 0 violations<br>
+                    • <strong>BatchRolling:</strong> 140s, 2 INCOMPATIBILITY VIOLATIONS<br>
+                    • <strong>Hybrid:</strong> 200s, 1 rollback, 1 violation<br><br>
+
+                    <strong>INSIGHT:</strong> INCOMPATIBLE edges require careful ordering. Blue-Green avoids by switching all at once.<br><br>
+
+                    <strong>SCENARIO 3 - PATCH RISK</strong> (seed=21):<br>
+                    • Topology: 3 nodes - 1 core host, 2 sensors<br>
+                    • Core host: 20% failure, <strong>rollback_supported=false!</strong><br>
+                    • Core: 180s, severity=9.0 (critical)<br><br>
+
+                    <strong>RESULTS:</strong><br>
+                    • <strong>Big Bang:</strong> FAILED - "service=sensor healthy=0 min_up=1"<br>
+                    • <strong>Blue-Green:</strong> 180s, 0 rollbacks, 0 unavail<br>
+                    • <strong>Rolling:</strong> 210s, 1 rollback on sensor<br>
+                    • <strong>Hybrid:</strong> 330s, 0 rollbacks (90s guardrail overhead)<br><br>
+
+                    <strong>CRITICAL INSIGHT:</strong> If core fails, NO recovery. Blue-Green shadow = only safe approach.
+                </aside>
+            </section>
+
+            <!-- SLIDE 10: Key Findings -->
+            <section>
+                <h2>Key Findings</h2>
+                
+                <div style="margin-top: 1em;">
+                    <div class="finding" style="border-left-color: var(--color-danger);">
+                        <strong class="strategy-bad">1. Big Bang is Infeasible</strong>
+                        <p>Failed in ALL scenarios with availability requirements</p>
+                    </div>
+                    
+                    <div class="finding" style="border-left-color: var(--color-success);">
+                        <strong class="strategy-good">2. Blue-Green is Optimal</strong>
+                        <p>Fastest, lowest exposure, zero downtime (requires extra capacity)</p>
+                    </div>
+                    
+                    <div class="finding" style="border-left-color: var(--color-primary);">
+                        <strong class="info">3. Rolling is the Safe Fallback</strong>
+                        <p>When Blue-Green not feasible, maintains availability</p>
+                    </div>
+                    
+                    <div class="finding" style="border-left-color: var(--color-purple);">
+                        <strong style="color: var(--color-purple);">4. Zero Service-Level Downtime Achieved</strong>
+                        <p>All successful strategies maintained min_up throughout</p>
+                    </div>
+                </div>
+                
+                <aside class="notes">
+                    [RO] <strong>CONCLUZII CANTITATIVE PE TOATE SCENARIILE:</strong><br><br>
+
+                    <strong>1. BIG BANG EȘUEAZĂ 100%:</strong><br>
+                    • În toate cele 3 scenarii → RuntimeError înainte de pasul 1<br>
+                    • Verificatorul rulează ÎNAINTE de fiecare pas<br>
+                    • Demonstrează că verificarea formală funcționează<br><br>
+
+                    <strong>2. BLUE-GREEN DOMINĂ:</strong><br>
+                    • Scenariul 1: 120s vs 315s (Rolling) - 2.6x mai rapid<br>
+                    • Scenariul 2: 70s vs 140s - 2x mai rapid<br>
+                    • Scenariul 3: 180s vs 210s - 1.2x mai rapid<br>
+                    • ZERO node_unavailability în toate scenariile<br>
+                    • ZERO rollback-uri (eșecurile nu contează)<br><br>
+
+                    <strong>3. ROLLING CA FALLBACK:</strong><br>
+                    • A completat toate scenariile cu succes<br>
+                    • Indisponibilitate predictibilă: noduri × patch_duration<br>
+                    • Gestionează rollback-urile grațios<br><br>
+
+                    <strong>4. SERVICIU VS NOD:</strong><br>
+                    • total_downtime_overall = 0 pentru TOATE strategiile de succes<br>
+                    • node_unavailability > 0 pentru Rolling/Canary/BatchRolling<br>
+                    • Noduri individuale down, dar min_up menținut<br><br>
+
+                    <strong>5. GUARDRAILS (Hybrid):</strong><br>
+                    • 13 guardrails × 30s = 390s overhead<br>
+                    • 0 rollback-uri dar 11x mai lent<br>
+                    • Util când costul eșecului > costul timpului<br><br>
+
+                    ---<br><br>
+
+                    [EN] <strong>QUANTITATIVE FINDINGS ACROSS ALL SCENARIOS:</strong><br><br>
+
+                    <strong>1. BIG BANG FAILS 100%:</strong><br>
+                    • In all 3 scenarios → RuntimeError before step 1<br>
+                    • Constraint checker runs BEFORE each step<br>
+                    • Proves formal verification works<br><br>
+
+                    <strong>2. BLUE-GREEN DOMINATES:</strong><br>
+                    • Scenario 1: 120s vs 315s (Rolling) - 2.6x faster<br>
+                    • Scenario 2: 70s vs 140s - 2x faster<br>
+                    • Scenario 3: 180s vs 210s - 1.2x faster<br>
+                    • ZERO node_unavailability across all scenarios<br>
+                    • ZERO rollbacks (failures don't matter)<br><br>
+
+                    <strong>3. ROLLING AS FALLBACK:</strong><br>
+                    • Completed all scenarios successfully<br>
+                    • Predictable unavailability: nodes × patch_duration<br>
+                    • Handles rollbacks gracefully<br><br>
+
+                    <strong>4. SERVICE VS NODE:</strong><br>
+                    • total_downtime_overall = 0 for ALL successful strategies<br>
+                    • node_unavailability > 0 for Rolling/Canary/BatchRolling<br>
+                    • Individual nodes down, but min_up maintained<br><br>
+
+                    <strong>5. GUARDRAILS (Hybrid):</strong><br>
+                    • 13 guardrails × 30s = 390s overhead<br>
+                    • 0 rollbacks but 11x slower<br>
+                    • Use when failure cost > time cost
+                </aside>
+            </section>
+
+            <!-- SLIDE 11: Conclusions -->
+            <section>
+                <h2>Conclusions &amp; Future Work</h2>
+                
+                <div class="two-columns">
+                    <div>
+                        <h3>Conclusions</h3>
+                        <ul>
+                            <li>Naive strategies don't work</li>
+                            <li>Blue-Green optimal when capacity available</li>
+                            <li>Framework provides <span class="highlight">quantitative decision support</span></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>Future Directions</h3>
+                        <ul>
+                            <li>Auto-optimization (genetic algorithms)</li>
+                            <li>Dynamic scenarios</li>
+                            <li>Cost modeling</li>
+                            <li>Real system validation</li>
+                            <li>GUI visualization</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <br>
+                <div class="thank-you-box">
+                    <h2>Thank You!</h2>
+                    <p>Questions?</p>
+                    <p class="repo">
+                        <code>github.com/victor1606/patch-planner</code>
+                    </p>
+                </div>
+                
+                <aside class="notes">
+                    [RO] <strong>CONCLUZII:</strong><br><br>
+
+                    <strong>1. PLANIFICAREA CONȘTIENTĂ DE CONSTRÂNGERI:</strong><br>
+                    • Big Bang eșuează 100% în medii cu constrângeri<br>
+                    • TREBUIE să calculezi max_down per serviciu<br><br>
+
+                    <strong>2. BLUE-GREEN = STRATEGIA OPTIMĂ:</strong><br>
+                    • 2-3x mai rapid decât Rolling<br>
+                    • ~50% fereastră de expunere mai mică<br>
+                    • Zero indisponibilitate, zero rollback-uri<br>
+                    • Compromis: necesită 2x capacitate<br><br>
+
+                    <strong>3. FRAMEWORK CANTITATIV:</strong><br>
+                    • Nu "cred că e mai bun" ci "47,160 vs 90,150"<br>
+                    • Simulează topologia înainte de producție<br>
+                    • Reproductibil prin seed<br><br>
+
+                    <strong>LUCRĂRI VIITOARE:</strong><br>
+                    • Algoritm genetic pentru plan Pareto-optimal<br>
+                    • Scenarii dinamice (noduri adăugate/eliminate)<br>
+                    • Modelare costuri (capacitate, SLA)<br>
+                    • Validare pe Kubernetes real<br>
+                    • GUI vizualizare în timp real<br><br>
+
+                    <strong>VALOARE:</strong> Face punte între securitate și operațiuni cu metrici obiective.<br><br>
+
+                    ---<br><br>
+
+                    [EN] <strong>CONCLUSIONS:</strong><br><br>
+
+                    <strong>1. CONSTRAINT-AWARE PLANNING:</strong><br>
+                    • Big Bang fails 100% in constrained environments<br>
+                    • MUST compute max_down per service<br><br>
+
+                    <strong>2. BLUE-GREEN = OPTIMAL STRATEGY:</strong><br>
+                    • 2-3x faster than Rolling<br>
+                    • ~50% lower exposure window<br>
+                    • Zero unavailability, zero rollbacks<br>
+                    • Trade-off: requires 2x capacity<br><br>
+
+                    <strong>3. QUANTITATIVE FRAMEWORK:</strong><br>
+                    • Not "I think it's better" but "47,160 vs 90,150"<br>
+                    • Simulate topology before production<br>
+                    • Reproducible via seed<br><br>
+
+                    <strong>FUTURE WORK:</strong><br>
+                    • Genetic algorithm for Pareto-optimal plan<br>
+                    • Dynamic scenarios (nodes added/removed)<br>
+                    • Cost modeling (capacity, SLA)<br>
+                    • Validation on real Kubernetes<br>
+                    • Real-time GUI visualization<br><br>
+
+                    <strong>VALUE:</strong> Bridges gap between security and ops with objective metrics.
+                </aside>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Reveal.js Core Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/notes/notes.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/highlight/highlight.min.js"></script>
+    
+    <!-- Custom Presentation Script -->
+    <script src="js/presentation.js"></script>
+</body>
+</html>

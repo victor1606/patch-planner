@@ -117,5 +117,3 @@ reports (JSON/CSV/MD)  ◄──  Reporter  ◄──  SimulationResult  ◄─�
 3. **Extensible strategies**: New strategies require only implementing one method
 4. **Separation of concerns**: Planning logic decoupled from simulation execution
 5. **Constraint-aware planning**: Strategies check min_up during plan generation, not just execution
-
-

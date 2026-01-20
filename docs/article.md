@@ -363,8 +363,3 @@ The source code is available under an open-source license and can be extended wi
 | Configuration | PyYAML | Scenario parsing |
 | Visualization | Matplotlib | Charts |
 | Testing | pytest | Unit tests |
-
----
-
-*Article prepared for the Dependable Systems course*
-*January 2026*
