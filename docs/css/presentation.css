@@ -2,16 +2,16 @@
 
 /* ===== ROOT VARIABLES ===== */
 :root {
-    --r-heading-color: #58a6ff;
-    --r-link-color: #58a6ff;
-    --color-primary: #58a6ff;
-    --color-success: #7ee787;
-    --color-warning: #f0883e;
-    --color-danger: #f85149;
-    --color-purple: #a371f7;
-    --color-muted: #8b949e;
-    --color-bg-secondary: #21262d;
-    --color-border: #30363d;
+    --r-heading-color: #0969da;
+    --r-link-color: #0969da;
+    --color-primary: #0969da;
+    --color-success: #1a7f37;
+    --color-warning: #bf8700;
+    --color-danger: #cf222e;
+    --color-purple: #8250df;
+    --color-muted: #57606a;
+    --color-bg-secondary: #f6f8fa;
+    --color-border: #d0d7de;
 }
 
 /* ===== BASE STYLES ===== */
@@ -22,37 +22,39 @@
 }
 
 .reveal h1 {
-    font-size: 2.2em;
+    font-size: clamp(1.2em, 3vw, 1.8em);
 }
 
 .reveal h2 {
-    font-size: 1.6em;
+    font-size: clamp(0.95em, 2.5vw, 1.4em);
     color: var(--color-primary);
 }
 
 .reveal h3 {
-    font-size: 1.2em;
+    font-size: clamp(0.8em, 2vw, 1.1em);
     color: var(--color-muted);
 }
 
 .reveal section {
     text-align: left;
+    font-size: 0.85em;
 }
 
 .reveal ul {
-    margin-left: 1em;
+    margin-left: 0.8em;
 }
 
 .reveal li {
-    margin-bottom: 0.5em;
+    margin-bottom: 0.35em;
 }
 
 /* ===== CODE STYLES ===== */
 .reveal code {
-    background: #161b22;
+    background: #f6f8fa;
     padding: 0.2em 0.4em;
     border-radius: 4px;
     font-size: 0.85em;
+    color: #24292f;
 }
 
 .reveal pre code {
@@ -60,13 +62,21 @@
 }
 
 /* ===== TABLE STYLES ===== */
+.reveal .table-wrapper {
+    display: block;
+    overflow-x: auto;
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+}
+
 .reveal table {
-    font-size: 0.7em;
+    font-size: clamp(0.45em, 1.2vw, 0.6em);
     margin: 0 auto;
+    max-width: 100%;
 }
 
 .reveal th {
-    background: #238636;
+    background: #0969da;
     color: white;
     padding: 0.5em;
 }
@@ -104,7 +114,7 @@
 
 /* ===== RESULT TABLE STYLES ===== */
 .result-best {
-    background: #238636 !important;
+    background: #1a7f37 !important;
     color: white;
     font-weight: bold;
 }
@@ -118,16 +128,19 @@
 .two-columns {
     display: flex;
     gap: 2em;
+    max-width: 95vw;
 }
 
 .two-columns > div {
     flex: 1;
+    min-width: 0;
 }
 
 /* ===== PIPELINE VISUALIZATION ===== */
 .pipeline-container {
     text-align: center;
     margin: 2em 0;
+    max-width: 95vw;
 }
 
 .pipeline-box {
@@ -153,9 +166,10 @@
 /* ===== CARD GRID ===== */
 .card-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5em;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1em;
     margin-top: 1em;
+    max-width: 95vw;
 }
 
 .card {
@@ -249,6 +263,49 @@
 }
 
 /* ===== RESPONSIVE STYLES ===== */
+
+/* 13" Laptop screens */
+@media screen and (max-width: 1440px) {
+    .reveal section {
+        padding: 0.3em;
+        font-size: 0.8em;
+    }
+
+    .reveal ul {
+        margin-left: 0.6em;
+    }
+
+    .reveal li {
+        margin-bottom: 0.25em;
+        font-size: 0.9em;
+    }
+
+    .reveal table {
+        font-size: 0.5em;
+    }
+
+    .reveal th,
+    .reveal td {
+        padding: 0.25em 0.4em;
+    }
+
+    .pipeline-box {
+        padding: 0.3em 0.6em;
+        font-size: 0.8em;
+    }
+
+    .card {
+        padding: 0.6em;
+    }
+
+    .card h3 {
+        font-size: 0.9em;
+    }
+
+    .card p {
+        font-size: 0.85em;
+    }
+}
 
 /* Tablet and smaller */
 @media screen and (max-width: 1024px) {

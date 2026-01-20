@@ -24,18 +24,18 @@
             controls: true,
             progress: true,
             history: true,
-            center: false,
+            center: true,
             
             // Transitions
             transition: 'slide',
             backgroundTransition: 'fade',
             
             // Responsive settings
-            width: '100%',
-            height: '100%',
-            margin: 0.1,
-            minScale: 0.2,
-            maxScale: 2.0,
+            width: 1280,
+            height: 720,
+            margin: 0.04,
+            minScale: 0.1,
+            maxScale: 1.5,
             
             // Plugins
             plugins: [RevealNotes, RevealHighlight]
