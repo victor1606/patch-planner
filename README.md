@@ -251,15 +251,3 @@ python scripts/run.py scenario1 hybrid --out results/my-experiment
 
 - **Architecture Overview**: `docs/architecture_summary.md`
 - **Detailed Architecture**: `docs/architecture.md`
-
----
-
-## Course Context
-
-**Dependable Systems Project** - Evaluates patch deployment strategies considering:
-- **Availability**: Maintaining service uptime during updates
-- **Security**: Minimizing vulnerability exposure window
-- **Reliability**: Handling failures and rollbacks
-- **Compatibility**: Managing mixed-version dependencies
-
-For academic evaluation criteria, see project requirements in documentation.
